@@ -75,6 +75,27 @@ body {
     color: #2c5aa0;
 }
 
+/* Mobile Menu Toggle */
+.mobile-menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 2rem;
+    color: #2c5aa0;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.mobile-menu-toggle:hover {
+    background-color: #f0f0f0;
+}
+
+.mobile-menu-toggle span {
+    font-weight: bold;
+}
+
 /* Unique License Banner */
 .unique-banner {
     background: linear-gradient(135deg, #2c5aa0, #1e3a8a);
@@ -1075,6 +1096,40 @@ body {
 
 /* Responsive adjustments for new sections */
 @media (max-width: 768px) {
+    .mobile-menu-toggle {
+        display: block;
+    }
+    
+    .nav-menu {
+        position: fixed;
+        top: 80px;
+        right: -100%;
+        width: 250px;
+        height: calc(100vh - 80px);
+        background: white;
+        flex-direction: column;
+        padding: 2rem 1rem;
+        box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+        transition: right 0.3s ease;
+        z-index: 999;
+        gap: 1rem;
+    }
+    
+    .nav-menu.active {
+        right: 0;
+    }
+    
+    .nav-menu li {
+        width: 100%;
+    }
+    
+    .nav-menu a {
+        display: block;
+        padding: 1rem;
+        border-bottom: 1px solid #eee;
+        font-size: 1.1rem;
+    }
+    
     .projects-grid {
         grid-template-columns: 1fr;
     }
