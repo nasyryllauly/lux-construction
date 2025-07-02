@@ -46,10 +46,16 @@ body {
     margin-bottom: 0.5rem;
 }
 
-.nav-logo .phone, .nav-logo .email {
+.nav-logo .phone {
     display: block;
-    font-size: 0.9rem;
-    color: #666;
+    font-size: 1rem;
+    color: #2c5aa0;
+    font-weight: 600;
+    text-decoration: none;
+    border: none;
+    background: none;
+    padding: 0;
+    margin: 0;
 }
 
 .nav-menu {
