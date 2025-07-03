@@ -84,7 +84,7 @@ document.addEventListener('keydown', function(event) {
     }
 });
 
-// Form submission with Netlify Functions
+// Form submission with direct Telegram API
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('contact-form');
     
@@ -116,25 +116,43 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             try {
-                // Отправляем через Netlify Function
-                const response = await fetch('/.netlify/functions/send-telegram', {
+                // Конфигурация Telegram
+                const BOT_TOKEN = '7663496694:AAGgiCtObnpNgwQ_nU_26EsCQJ_7arJ2fkU';
+                const CHAT_ID = '@luxconstructionleads';
+                
+                // Формируем сообщение
+                const telegramMessage = `🏗️ Новая заявка с сайта LUX Construction
+
+👤 Имя: ${formData.name}
+📞 Телефон: ${formData.phone}${formData.email ? `\n📧 Email: ${formData.email}` : ''}${formData.message ? `\n💬 Сообщение: ${formData.message}` : ''}
+
+⏰ Время: ${new Date().toLocaleString('ru-RU', { timeZone: 'Asia/Almaty' })}
+🌐 Источник: luxconstruction.kz`;
+
+                // Отправляем через CORS-прокси
+                const proxyUrl = 'https://api.allorigins.win/raw?url=';
+                const telegramUrl = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+                
+                const response = await fetch(proxyUrl + encodeURIComponent(telegramUrl), {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify(formData)
+                    body: JSON.stringify({
+                        chat_id: CHAT_ID,
+                        text: telegramMessage,
+                        parse_mode: 'HTML'
+                    })
                 });
                 
-                const result = await response.json();
-                
-                if (response.ok && result.success) {
+                if (response.ok) {
                     // Успех
                     alert('✅ Заявка успешно отправлена! Мы свяжемся с вами в ближайшее время.');
                     form.reset();
                     closeConsultationModal(); // Закрываем модальное окно если оно открыто
                 } else {
                     // Ошибка
-                    console.error('Server error:', result);
+                    console.error('Telegram API error:', response.status);
                     alert('❌ Ошибка отправки заявки. Попробуйте позвонить нам напрямую: +7 (707) 660-10-87');
                 }
                 
