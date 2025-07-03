@@ -11,80 +11,43 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
-// Mobile menu toggle
-document.addEventListener('DOMContentLoaded', function() {
-    const mobileToggle = document.querySelector('.mobile-menu-toggle');
-    const navMenu = document.querySelector('.nav-menu');
-    
-    if (mobileToggle && navMenu) {
-        mobileToggle.addEventListener('click', function() {
-            navMenu.classList.toggle('active');
-            mobileToggle.classList.toggle('active');
-        });
+// Mobile menu functionality
+const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+const navMenu = document.querySelector('.nav-menu');
 
-        // Закрытие меню при клике на пункт
-        document.querySelectorAll('.nav-menu a').forEach(link => {
-            link.addEventListener('click', function() {
-                navMenu.classList.remove('active');
-                mobileToggle.classList.remove('active');
-            });
-        });
+if (mobileMenuBtn && navMenu) {
+    mobileMenuBtn.addEventListener('click', function() {
+        navMenu.classList.toggle('active');
+        mobileMenuBtn.classList.toggle('active');
+    });
 
-        // Закрытие меню при клике вне его
-        document.addEventListener('click', function(e) {
-            if (!navMenu.contains(e.target) && !mobileToggle.contains(e.target)) {
-                navMenu.classList.remove('active');
-                mobileToggle.classList.remove('active');
-            }
+    // Close menu when clicking on a link
+    document.querySelectorAll('.nav-menu a').forEach(link => {
+        link.addEventListener('click', function() {
+            navMenu.classList.remove('active');
+            mobileMenuBtn.classList.remove('active');
         });
-    }
-});
-
-// Header scroll effect
-window.addEventListener('scroll', function() {
-    const header = document.querySelector('.header');
-    if (header && window.scrollY > 100) {
-        header.style.background = 'rgba(255, 255, 255, 0.95)';
-        header.style.backdropFilter = 'blur(10px)';
-    } else if (header) {
-        header.style.background = '#fff';
-        header.style.backdropFilter = 'none';
-    }
-});
+    });
+}
 
 // Modal functionality
 function openConsultationModal() {
-    const modal = document.getElementById('consultationModal');
-    if (modal) {
-        modal.style.display = 'block';
-        document.body.style.overflow = 'hidden';
-    }
+    document.getElementById('consultationModal').style.display = 'block';
 }
 
 function closeConsultationModal() {
-    const modal = document.getElementById('consultationModal');
-    if (modal) {
-        modal.style.display = 'none';
-        document.body.style.overflow = 'auto';
-    }
+    document.getElementById('consultationModal').style.display = 'none';
 }
 
 // Close modal when clicking outside
-window.onclick = function(event) {
+window.addEventListener('click', function(event) {
     const modal = document.getElementById('consultationModal');
     if (event.target === modal) {
         closeConsultationModal();
     }
-}
-
-// Close modal with Escape key
-document.addEventListener('keydown', function(event) {
-    if (event.key === 'Escape') {
-        closeConsultationModal();
-    }
 });
 
-// Form submission with direct Telegram API
+// Form submission with Netlify Function
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('consultationForm');
     
@@ -92,81 +55,86 @@ document.addEventListener('DOMContentLoaded', function() {
         form.addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            const submitBtn = form.querySelector('button[type="submit"]');
-            const originalText = submitBtn.textContent;
-            
-            // Показываем загрузку
-            submitBtn.textContent = 'Отправляем...';
-            submitBtn.disabled = true;
-            
-            // Собираем данные формы
-            const formData = {
-                name: form.querySelector('input[name="name"]').value.trim(),
-                phone: form.querySelector('input[name="phone"]').value.trim(),
-                email: form.querySelector('input[name="email"]').value.trim(),
-                message: form.querySelector('textarea[name="message"]').value.trim()
-            };
+            // Получаем данные формы
+            const formData = new FormData(form);
+            const name = formData.get('name')?.trim();
+            const phone = formData.get('phone')?.trim();
+            const email = formData.get('email')?.trim();
+            const message = formData.get('message')?.trim();
             
             // Валидация
-            if (!formData.name || !formData.phone) {
-                alert('Пожалуйста, заполните имя и телефон');
-                submitBtn.textContent = originalText;
-                submitBtn.disabled = false;
+            if (!name || !phone) {
+                showNotification('Пожалуйста, заполните все поля', 'error');
                 return;
             }
             
-            // Конфигурация Telegram
-            const BOT_TOKEN = '7663496694:AAGgiCtObnpNgwQ_nU_26EsCQJ_7arJ2fkU';
-            const CHAT_ID = '@luxconstructionleads';
+            // Получаем кнопку отправки
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
             
-            // Формируем сообщение
-            const telegramMessage = `🏗️ Новая заявка с сайта LUX Construction
-
-👤 Имя: ${formData.name}
-📞 Телефон: ${formData.phone}${formData.email ? `\n📧 Email: ${formData.email}` : ''}${formData.message ? `\n💬 Сообщение: ${formData.message}` : ''}
-
-⏰ Время: ${new Date().toLocaleString('ru-RU', { timeZone: 'Asia/Almaty' })}
-🌐 Источник: luxconstruction.kz`;
-
-            // Пробуем отправить через fetch с mode: 'no-cors'
+            // Показываем состояние загрузки
+            submitBtn.textContent = 'ОТПРАВЛЯЕМ...';
+            submitBtn.disabled = true;
+            
+            // Добавляем таймаут для предотвращения зависания
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 секунд таймаут
+            
             try {
-                const telegramUrl = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
-                
-                fetch(telegramUrl, {
+                // Отправляем данные на Netlify Function
+                const response = await fetch('/.netlify/functions/send-telegram', {
                     method: 'POST',
-                    mode: 'no-cors',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        chat_id: CHAT_ID,
-                        text: telegramMessage
-                    })
+                        name: name,
+                        phone: phone,
+                        email: email,
+                        message: message
+                    }),
+                    signal: controller.signal
                 });
                 
-                // Показываем успех независимо от результата (no-cors не возвращает ответ)
-                setTimeout(() => {
-                    closeConsultationModal();
+                clearTimeout(timeoutId);
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(`HTTP error! status: ${response.status}, message: ${errorData.error || 'Unknown error'}`);
+                }
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Показываем модальное окно успеха
                     openSuccessModal();
+                    
+                    // Очищаем форму
                     form.reset();
-                }, 500);
+                    
+                    // Закрываем модальное окно формы
+                    closeConsultationModal();
+                } else {
+                    throw new Error(result.error || 'Неизвестная ошибка');
+                }
                 
             } catch (error) {
-                console.error('Telegram send error:', error);
-                // Все равно показываем успех
-                closeConsultationModal();
-                openSuccessModal();
-                form.reset();
+                console.error('Error sending form:', error);
+                
+                if (error.name === 'AbortError') {
+                    showNotification('Превышено время ожидания. Попробуйте еще раз.', 'error');
+                } else {
+                    showNotification('Произошла ошибка при отправке. Попробуйте еще раз.', 'error');
+                }
+            } finally {
+                // Восстанавливаем кнопку
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+                clearTimeout(timeoutId);
             }
-            
-            // Восстанавливаем кнопку
-            submitBtn.textContent = originalText;
-            submitBtn.disabled = false;
         });
     }
 });
-
-
 
 // Success Modal Functions
 function openSuccessModal() {
@@ -184,4 +152,60 @@ window.addEventListener('click', function(event) {
         closeSuccessModal();
     }
 });
+
+// Функция для показа уведомлений
+function showNotification(message, type = 'info') {
+    // Создаем элемент уведомления
+    const notification = document.createElement('div');
+    notification.className = `notification notification-${type}`;
+    notification.textContent = message;
+    
+    // Стили для уведомления
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: ${type === 'error' ? '#ff4757' : '#2ed573'};
+        color: white;
+        padding: 15px 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        z-index: 10000;
+        font-family: 'Roboto', sans-serif;
+        font-size: 14px;
+        max-width: 300px;
+        word-wrap: break-word;
+        animation: slideIn 0.3s ease-out;
+    `;
+    
+    // Добавляем CSS анимацию
+    if (!document.getElementById('notification-styles')) {
+        const style = document.createElement('style');
+        style.id = 'notification-styles';
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideOut {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+    
+    // Добавляем на страницу
+    document.body.appendChild(notification);
+    
+    // Удаляем через 5 секунд
+    setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease-in';
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.parentNode.removeChild(notification);
+            }
+        }, 300);
+    }, 5000);
+}
 
