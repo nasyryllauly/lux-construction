@@ -98,20 +98,49 @@ async function handleFormSubmission(e, form, isModal) {
     const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 секунд таймаут
     
     try {
-        // Отправляем данные на постоянный Flask endpoint
-        const response = await fetch('https://5000-iswsnh2lveij3xt9596sd-620ec329.manusvm.computer/api/submit-form', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                name: name,
-                phone: phone,
-                email: email || '',
-                message: message || ''
-            }),
-            signal: controller.signal
-        });
+        // Основной endpoint
+        let response;
+        let lastError;
+        
+        try {
+            // Отправляем данные на постоянный Flask endpoint
+            response = await fetch('https://5000-iswsnh2lveij3xt9596sd-620ec329.manusvm.computer/api/submit-form', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    name: name,
+                    phone: phone,
+                    email: email || '',
+                    message: message || ''
+                }),
+                signal: controller.signal
+            });
+        } catch (primaryError) {
+            console.warn('Primary endpoint failed, trying backup...', primaryError);
+            lastError = primaryError;
+            
+            // Резервный endpoint (развернутый сайт)
+            try {
+                response = await fetch('https://wdtlctzl.manus.space/api/submit-form', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        name: name,
+                        phone: phone,
+                        email: email || '',
+                        message: message || ''
+                    }),
+                    signal: controller.signal
+                });
+            } catch (backupError) {
+                console.error('Both endpoints failed');
+                throw lastError; // Бросаем первоначальную ошибку
+            }
+        }
         
         clearTimeout(timeoutId);
         
@@ -139,9 +168,18 @@ async function handleFormSubmission(e, form, isModal) {
         
     } catch (error) {
         console.error('Error sending form:', error);
+        console.error('Error details:', {
+            name: error.name,
+            message: error.message,
+            stack: error.stack
+        });
         
         if (error.name === 'AbortError') {
             showNotification('Превышено время ожидания. Попробуйте еще раз.', 'error');
+        } else if (error.message.includes('Failed to fetch')) {
+            showNotification('Проблема с подключением к серверу. Проверьте интернет-соединение.', 'error');
+        } else if (error.message.includes('HTTP error')) {
+            showNotification('Ошибка сервера. Попробуйте еще раз через несколько минут.', 'error');
         } else {
             showNotification('Произошла ошибка при отправке. Попробуйте еще раз.', 'error');
         }
