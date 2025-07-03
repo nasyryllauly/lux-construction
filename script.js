@@ -49,92 +49,109 @@ window.addEventListener('click', function(event) {
 
 // Form submission with Netlify Function
 document.addEventListener('DOMContentLoaded', function() {
-    const form = document.getElementById('consultationForm');
+    // Обработчик для модальной формы
+    const modalForm = document.getElementById('consultationForm');
     
-    if (form) {
-        form.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            // Получаем данные формы
-            const formData = new FormData(form);
-            const name = formData.get('name')?.trim();
-            const phone = formData.get('phone')?.trim();
-            const email = formData.get('email')?.trim();
-            const message = formData.get('message')?.trim();
-            
-            // Валидация
-            if (!name || !phone) {
-                showNotification('Пожалуйста, заполните все поля', 'error');
-                return;
-            }
-            
-            // Получаем кнопку отправки
-            const submitBtn = form.querySelector('button[type="submit"]');
-            const originalText = submitBtn.textContent;
-            
-            // Показываем состояние загрузки
-            submitBtn.textContent = 'ОТПРАВЛЯЕМ...';
-            submitBtn.disabled = true;
-            
-            // Добавляем таймаут для предотвращения зависания
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 секунд таймаут
-            
-            try {
-                // Отправляем данные на постоянный Flask endpoint
-                const response = await fetch('https://qjh9iecedy33.manus.space/api/submit-form', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        name: name,
-                        phone: phone,
-                        email: email,
-                        message: message
-                    }),
-                    signal: controller.signal
-                });
-                
-                clearTimeout(timeoutId);
-                
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(`HTTP error! status: ${response.status}, message: ${errorData.error || 'Unknown error'}`);
-                }
-                
-                const result = await response.json();
-                
-                if (result.status === 'success') {
-                    // Показываем модальное окно успеха
-                    openSuccessModal();
-                    
-                    // Очищаем форму
-                    form.reset();
-                    
-                    // Закрываем модальное окно формы
-                    closeConsultationModal();
-                } else {
-                    throw new Error(result.message || 'Неизвестная ошибка');
-                }
-                
-            } catch (error) {
-                console.error('Error sending form:', error);
-                
-                if (error.name === 'AbortError') {
-                    showNotification('Превышено время ожидания. Попробуйте еще раз.', 'error');
-                } else {
-                    showNotification('Произошла ошибка при отправке. Попробуйте еще раз.', 'error');
-                }
-            } finally {
-                // Восстанавливаем кнопку
-                submitBtn.textContent = originalText;
-                submitBtn.disabled = false;
-                clearTimeout(timeoutId);
-            }
+    if (modalForm) {
+        modalForm.addEventListener('submit', async function(e) {
+            await handleFormSubmission(e, modalForm, true); // true означает модальная форма
+        });
+    }
+    
+    // Обработчик для основной формы на странице
+    const mainForm = document.getElementById('mainContactForm');
+    
+    if (mainForm) {
+        mainForm.addEventListener('submit', async function(e) {
+            await handleFormSubmission(e, mainForm, false); // false означает основная форма
         });
     }
 });
+
+// Универсальная функция обработки отправки формы
+async function handleFormSubmission(e, form, isModal) {
+    e.preventDefault();
+    
+    // Получаем данные формы
+    const formData = new FormData(form);
+    const name = formData.get('name')?.trim() || form.querySelector('input[placeholder*="имя"], input[placeholder*="Имя"]')?.value?.trim();
+    const phone = formData.get('phone')?.trim() || form.querySelector('input[placeholder*="телефон"], input[placeholder*="Телефон"]')?.value?.trim();
+    const email = formData.get('email')?.trim() || form.querySelector('input[placeholder*="email"], input[placeholder*="Email"]')?.value?.trim();
+    const message = formData.get('message')?.trim() || form.querySelector('textarea')?.value?.trim();
+    
+    // Валидация
+    if (!name || !phone) {
+        showNotification('Пожалуйста, заполните все поля', 'error');
+        return;
+    }
+    
+    // Получаем кнопку отправки
+    const submitBtn = form.querySelector('button[type="submit"]') || form.querySelector('button');
+    const originalText = submitBtn.textContent;
+    
+    // Показываем состояние загрузки
+    submitBtn.textContent = 'ОТПРАВЛЯЕМ...';
+    submitBtn.disabled = true;
+    
+    // Добавляем таймаут для предотвращения зависания
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 секунд таймаут
+    
+    try {
+        // Отправляем данные на постоянный Flask endpoint
+        const response = await fetch('https://5000-iswsnh2lveij3xt9596sd-620ec329.manusvm.computer/api/submit-form', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                name: name,
+                phone: phone,
+                email: email || '',
+                message: message || ''
+            }),
+            signal: controller.signal
+        });
+        
+        clearTimeout(timeoutId);
+        
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(`HTTP error! status: ${response.status}, message: ${errorData.error || 'Unknown error'}`);
+        }
+        
+        const result = await response.json();
+        
+        if (result.status === 'success') {
+            // Показываем модальное окно успеха
+            openSuccessModal();
+            
+            // Очищаем форму
+            form.reset();
+            
+            // Если это модальная форма, закрываем её
+            if (isModal) {
+                closeConsultationModal();
+            }
+        } else {
+            throw new Error(result.message || 'Неизвестная ошибка');
+        }
+        
+    } catch (error) {
+        console.error('Error sending form:', error);
+        
+        if (error.name === 'AbortError') {
+            showNotification('Превышено время ожидания. Попробуйте еще раз.', 'error');
+        } else {
+            showNotification('Произошла ошибка при отправке. Попробуйте еще раз.', 'error');
+        }
+    } finally {
+        // Восстанавливаем кнопку
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
+        clearTimeout(timeoutId);
+    }
+}
 
 // Success Modal Functions
 function openSuccessModal() {
