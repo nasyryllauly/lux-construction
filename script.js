@@ -86,7 +86,7 @@ document.addEventListener('keydown', function(event) {
 
 // Form submission with direct Telegram API
 document.addEventListener('DOMContentLoaded', function() {
-    const form = document.getElementById('contact-form');
+    const form = document.getElementById('consultationForm');
     
     if (form) {
         form.addEventListener('submit', async function(e) {
@@ -115,13 +115,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             
-            try {
-                // Конфигурация Telegram
-                const BOT_TOKEN = '7663496694:AAGgiCtObnpNgwQ_nU_26EsCQJ_7arJ2fkU';
-                const CHAT_ID = '@luxconstructionleads';
-                
-                // Формируем сообщение
-                const telegramMessage = `🏗️ Новая заявка с сайта LUX Construction
+            // Конфигурация Telegram
+            const BOT_TOKEN = '7663496694:AAGgiCtObnpNgwQ_nU_26EsCQJ_7arJ2fkU';
+            const CHAT_ID = '@luxconstructionleads';
+            
+            // Формируем сообщение
+            const telegramMessage = `🏗️ Новая заявка с сайта LUX Construction
 
 👤 Имя: ${formData.name}
 📞 Телефон: ${formData.phone}${formData.email ? `\n📧 Email: ${formData.email}` : ''}${formData.message ? `\n💬 Сообщение: ${formData.message}` : ''}
@@ -129,37 +128,28 @@ document.addEventListener('DOMContentLoaded', function() {
 ⏰ Время: ${new Date().toLocaleString('ru-RU', { timeZone: 'Asia/Almaty' })}
 🌐 Источник: luxconstruction.kz`;
 
-                // Отправляем через CORS-прокси
-                const proxyUrl = 'https://api.allorigins.win/raw?url=';
-                const telegramUrl = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
-                
-                const response = await fetch(proxyUrl + encodeURIComponent(telegramUrl), {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        chat_id: CHAT_ID,
-                        text: telegramMessage,
-                        parse_mode: 'HTML'
-                    })
-                });
-                
-                if (response.ok) {
-                    // Успех
-                    alert('✅ Заявка успешно отправлена! Мы свяжемся с вами в ближайшее время.');
-                    form.reset();
-                    closeConsultationModal(); // Закрываем модальное окно если оно открыто
-                } else {
-                    // Ошибка
-                    console.error('Telegram API error:', response.status);
-                    alert('❌ Ошибка отправки заявки. Попробуйте позвонить нам напрямую: +7 (707) 660-10-87');
-                }
-                
-            } catch (error) {
-                console.error('Network error:', error);
-                alert('❌ Ошибка сети. Проверьте подключение к интернету или позвоните нам: +7 (707) 660-10-87');
-            }
+            // Отправляем через GET-запрос с URL параметрами
+            const telegramUrl = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+            const params = new URLSearchParams({
+                chat_id: CHAT_ID,
+                text: telegramMessage
+            });
+            
+            // Создаем скрытый iframe для отправки запроса
+            const iframe = document.createElement('iframe');
+            iframe.style.display = 'none';
+            iframe.src = `${telegramUrl}?${params.toString()}`;
+            document.body.appendChild(iframe);
+            
+            // Удаляем iframe через 3 секунды
+            setTimeout(() => {
+                document.body.removeChild(iframe);
+            }, 3000);
+            
+            // Показываем сообщение об успехе
+            alert('✅ Заявка отправлена! Мы свяжемся с вами в ближайшее время.');
+            form.reset();
+            closeConsultationModal();
             
             // Восстанавливаем кнопку
             submitBtn.textContent = originalText;
