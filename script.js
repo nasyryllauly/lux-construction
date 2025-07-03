@@ -1,4 +1,3 @@
-// Smooth scrolling for navigation links
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
         e.preventDefault();
@@ -23,206 +22,6 @@ window.addEventListener('scroll', function() {
         header.style.backdropFilter = 'none';
     }
 });
-
-// Form submission
-document.querySelector('form').addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    // Get form data
-    const formData = new FormData(this);
-    const name = this.querySelector('input[type="text"]').value;
-    const phone = this.querySelector('input[type="tel"]').value;
-    const email = this.querySelector('input[type="email"]').value;
-    const message = this.querySelector('textarea').value;
-    
-    // Basic validation
-    if (!name || !phone) {
-        alert('Пожалуйста, заполните обязательные поля (имя и телефон)');
-        return;
-    }
-    
-    // Phone validation
-    const phoneRegex = /^[\+]?[0-9\s\-\(\)]{10,}$/;
-    if (!phoneRegex.test(phone)) {
-        alert('Пожалуйста, введите корректный номер телефона');
-        return;
-    }
-    
-    // Email validation (if provided)
-    if (email) {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
-            alert('Пожалуйста, введите корректный email адрес');
-            return;
-        }
-    }
-    
-    // Simulate form submission
-    const submitBtn = this.querySelector('button[type="submit"]');
-    const originalText = submitBtn.textContent;
-    
-    submitBtn.textContent = 'Отправляется...';
-    submitBtn.disabled = true;
-    
-    // Simulate API call
-    setTimeout(() => {
-        alert('Спасибо за заявку! Мы свяжемся с вами в течение 24 часов.');
-        this.reset();
-        submitBtn.textContent = originalText;
-        submitBtn.disabled = false;
-    }, 2000);
-});
-
-// Animate stats on scroll
-function animateStats() {
-    const stats = document.querySelectorAll('.stat-number');
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const target = entry.target;
-                const finalValue = target.textContent;
-                const numericValue = parseInt(finalValue.replace(/\D/g, ''));
-                
-                if (numericValue) {
-                    animateNumber(target, 0, numericValue, finalValue);
-                }
-                observer.unobserve(target);
-            }
-        });
-    });
-    
-    stats.forEach(stat => observer.observe(stat));
-}
-
-function animateNumber(element, start, end, suffix) {
-    const duration = 2000;
-    const startTime = performance.now();
-    
-    function update(currentTime) {
-        const elapsed = currentTime - startTime;
-        const progress = Math.min(elapsed / duration, 1);
-        
-        const current = Math.floor(start + (end - start) * progress);
-        element.textContent = current + suffix.replace(/\d/g, '').replace(current.toString(), '');
-        
-        if (progress < 1) {
-            requestAnimationFrame(update);
-        } else {
-            element.textContent = suffix;
-        }
-    }
-    
-    requestAnimationFrame(update);
-}
-
-// Initialize animations when DOM is loaded
-document.addEventListener('DOMContentLoaded', function() {
-    animateStats();
-    
-    // Add loading animation to service cards
-    const serviceCards = document.querySelectorAll('.service-card');
-    const cardObserver = new IntersectionObserver((entries) => {
-        entries.forEach((entry, index) => {
-            if (entry.isIntersecting) {
-                setTimeout(() => {
-                    entry.target.style.opacity = '1';
-                    entry.target.style.transform = 'translateY(0)';
-                }, index * 100);
-                cardObserver.unobserve(entry.target);
-            }
-        });
-    });
-    
-    serviceCards.forEach(card => {
-        card.style.opacity = '0';
-        card.style.transform = 'translateY(20px)';
-        card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-        cardObserver.observe(card);
-    });
-});
-
-// Mobile menu toggle (if needed)
-function toggleMobileMenu() {
-    const navMenu = document.querySelector('.nav-menu');
-    navMenu.classList.toggle('active');
-}
-
-// Add click handlers for social links
-document.querySelectorAll('.social-btn').forEach(btn => {
-    btn.addEventListener('click', function(e) {
-        // Add analytics tracking here if needed
-        console.log('Social link clicked:', this.href);
-    });
-});
-
-// Highlight unique license banner
-function highlightUniqueFeature() {
-    const banner = document.querySelector('.unique-banner');
-    const specialCards = document.querySelectorAll('.service-card.special, .license-card.special');
-    
-    // Add pulse effect to special elements when they come into view
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.style.animation = 'pulse 2s ease-in-out 3';
-            }
-        });
-    });
-    
-    specialCards.forEach(card => observer.observe(card));
-}
-
-// Initialize special effects
-document.addEventListener('DOMContentLoaded', highlightUniqueFeature);
-
-// Add smooth reveal animation for sections
-function addSectionAnimations() {
-    const sections = document.querySelectorAll('section');
-    
-    const sectionObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('section-visible');
-            }
-        });
-    }, {
-        threshold: 0.1
-    });
-    
-    sections.forEach(section => {
-        section.classList.add('section-hidden');
-        sectionObserver.observe(section);
-    });
-}
-
-// Add CSS for section animations
-const style = document.createElement('style');
-style.textContent = `
-    .section-hidden {
-        opacity: 0;
-        transform: translateY(30px);
-        transition: opacity 0.8s ease, transform 0.8s ease;
-    }
-    
-    .section-visible {
-        opacity: 1;
-        transform: translateY(0);
-    }
-    
-    @media (prefers-reduced-motion: reduce) {
-        .section-hidden,
-        .section-visible {
-            opacity: 1;
-            transform: none;
-            transition: none;
-        }
-    }
-`;
-document.head.appendChild(style);
-
-// Initialize section animations
-document.addEventListener('DOMContentLoaded', addSectionAnimations);
-
 
 // Modal functionality
 function openConsultationModal() {
@@ -250,92 +49,117 @@ document.addEventListener('keydown', function(event) {
     }
 });
 
-// Form submission
-document.getElementById('consultationForm').addEventListener('submit', function(e) {
-    e.preventDefault();
+// Form submission with Telegram integration
+document.addEventListener('DOMContentLoaded', function() {
+    const consultationForm = document.getElementById('consultationForm');
     
-    const formData = new FormData(this);
-    const data = {
-        name: formData.get('name'),
-        phone: formData.get('phone'),
-        email: formData.get('email'),
-        message: formData.get('message')
-    };
-    
-    // Here you would typically send the data to your server
-    // For now, we'll just show a success message
-    alert('Спасибо за заявку! Мы свяжемся с вами в ближайшее время.');
-    
-    // Reset form and close modal
-    this.reset();
-    closeConsultationModal();
-});
-
-// Floating widgets animation on scroll
-let lastScrollTop = 0;
-window.addEventListener('scroll', function() {
-    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-    const widgets = document.querySelector('.floating-widgets');
-    
-    if (scrollTop > lastScrollTop) {
-        // Scrolling down
-        widgets.style.transform = 'translateY(-50%) translateX(10px)';
-    } else {
-        // Scrolling up
-        widgets.style.transform = 'translateY(-50%) translateX(0)';
+    if (consultationForm) {
+        consultationForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Get form data
+            const name = this.querySelector('input[name="name"]').value;
+            const phone = this.querySelector('input[name="phone"]').value;
+            const email = this.querySelector('input[name="email"]').value;
+            const message = this.querySelector('textarea[name="message"]').value;
+            
+            // Basic validation
+            if (!name || !phone) {
+                alert('Пожалуйста, заполните обязательные поля (имя и телефон)');
+                return;
+            }
+            
+            // Phone validation
+            const phoneRegex = /^[\+]?[0-9\s\-\(\)]{10,}$/;
+            if (!phoneRegex.test(phone)) {
+                alert('Пожалуйста, введите корректный номер телефона');
+                return;
+            }
+            
+            // Disable submit button
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Отправляем...';
+            
+            try {
+                // Send to Telegram
+                const response = await fetch('telegram-handler.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        name: name,
+                        phone: phone,
+                        email: email,
+                        message: message
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok && result.success) {
+                    alert('Спасибо! Ваша заявка отправлена. Мы свяжемся с вами в ближайшее время.');
+                    this.reset();
+                    closeConsultationModal();
+                } else {
+                    throw new Error(result.error || 'Ошибка отправки');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Произошла ошибка при отправке заявки. Пожалуйста, попробуйте позже или свяжитесь с нами по телефону.');
+            } finally {
+                // Re-enable submit button
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
+            }
+        });
     }
-    
-    lastScrollTop = scrollTop;
 });
-
-// WhatsApp and Telegram click tracking
-document.querySelector('.whatsapp-btn').addEventListener('click', function() {
-    // Track WhatsApp click (you can add analytics here)
-    console.log('WhatsApp clicked');
-});
-
-document.querySelector('.telegram-btn').addEventListener('click', function() {
-    // Track Telegram click (you can add analytics here)
-    console.log('Telegram clicked');
-});
-
-// Phone number formatting
-document.querySelector('input[name="phone"]').addEventListener('input', function(e) {
-    let value = e.target.value.replace(/\D/g, '');
-    if (value.startsWith('7')) {
-        value = '+7 (' + value.slice(1, 4) + ') ' + value.slice(4, 7) + '-' + value.slice(7, 9) + '-' + value.slice(9, 11);
-    } else if (value.startsWith('8')) {
-        value = '+7 (' + value.slice(1, 4) + ') ' + value.slice(4, 7) + '-' + value.slice(7, 9) + '-' + value.slice(9, 11);
-    }
-    e.target.value = value;
-});
-
-
 
 // Mobile menu toggle
 document.addEventListener('DOMContentLoaded', function() {
     const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
     const navMenu = document.querySelector('.nav-menu');
     
-    mobileMenuToggle.addEventListener('click', function() {
-        navMenu.classList.toggle('active');
-        mobileMenuToggle.classList.toggle('active');
-    });
-    
-    // Close menu when clicking on a link
-    document.querySelectorAll('.nav-menu a').forEach(link => {
-        link.addEventListener('click', function() {
-            navMenu.classList.remove('active');
-            mobileMenuToggle.classList.remove('active');
+    if (mobileMenuToggle && navMenu) {
+        mobileMenuToggle.addEventListener('click', function() {
+            navMenu.classList.toggle('active');
+            mobileMenuToggle.classList.toggle('active');
         });
-    });
-    
-    // Close menu when clicking outside
-    document.addEventListener('click', function(e) {
-        if (!mobileMenuToggle.contains(e.target) && !navMenu.contains(e.target)) {
-            navMenu.classList.remove('active');
-            mobileMenuToggle.classList.remove('active');
-        }
-    });
+        
+        // Close menu when clicking on a link
+        document.querySelectorAll('.nav-menu a').forEach(link => {
+            link.addEventListener('click', function() {
+                navMenu.classList.remove('active');
+                mobileMenuToggle.classList.remove('active');
+            });
+        });
+        
+        // Close menu when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!mobileMenuToggle.contains(e.target) && !navMenu.contains(e.target)) {
+                navMenu.classList.remove('active');
+                mobileMenuToggle.classList.remove('active');
+            }
+        });
+    }
+});
+
+// Phone number formatting
+document.addEventListener('DOMContentLoaded', function() {
+    const phoneInput = document.querySelector('input[name="phone"]');
+    if (phoneInput) {
+        phoneInput.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.startsWith('7')) {
+                value = '+7 (' + value.slice(1, 4) + ') ' + value.slice(4, 7) + '-' + value.slice(7, 9) + '-' + value.slice(9, 11);
+            } else if (value.startsWith('8')) {
+                value = '+7 (' + value.slice(1, 4) + ') ' + value.slice(4, 7) + '-' + value.slice(7, 9) + '-' + value.slice(9, 11);
+            }
+            e.target.value = value;
+        });
+    }
 });
 
