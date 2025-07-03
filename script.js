@@ -81,8 +81,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 секунд таймаут
             
             try {
-                // Отправляем данные на собственный Flask endpoint
-                const response = await fetch('https://5000-iwzzhjf9yiz7iw58gxw61-620ec329.manusvm.computer/api/submit-form', {
+                // Отправляем данные на постоянный Flask endpoint
+                const response = await fetch('https://qjh9iecedy33.manus.space/api/submit-form', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

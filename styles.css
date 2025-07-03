@@ -1374,51 +1374,135 @@ body {
 }
 
 
-/* Success Modal Styles */
-.success-modal {
+/* Success Modal Styles - AqylChat Style */
+.success-modal-aqyl {
+    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+    border-radius: 20px;
+    border: none;
+    max-width: 450px;
+    padding: 0;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+    animation: modalSlideIn 0.4s ease-out;
+}
+
+.success-content {
+    padding: 40px 30px;
     text-align: center;
-    max-width: 400px;
+    color: white;
 }
 
-.success-icon {
+.success-icon-party {
+    font-size: 80px;
     margin-bottom: 20px;
+    animation: partyBounce 1s ease-in-out;
 }
 
-.success-icon i {
-    font-size: 60px;
-    color: #10b981;
-    animation: successPulse 1s ease-in-out;
+@keyframes partyBounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-20px);
+    }
+    60% {
+        transform: translateY(-10px);
+    }
 }
 
-@keyframes successPulse {
-    0% {
-        transform: scale(0);
+@keyframes modalSlideIn {
+    from {
         opacity: 0;
+        transform: translateY(-50px) scale(0.9);
     }
-    50% {
-        transform: scale(1.1);
+    to {
         opacity: 1;
-    }
-    100% {
-        transform: scale(1);
-        opacity: 1;
+        transform: translateY(0) scale(1);
     }
 }
 
-.success-modal h3 {
+.success-title {
+    font-size: 32px;
+    font-weight: 700;
     color: #10b981;
     margin-bottom: 15px;
-    font-size: 24px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-.success-modal p {
-    color: #6b7280;
+.success-message {
+    font-size: 18px;
+    font-weight: 600;
+    color: white;
+    margin-bottom: 10px;
+    line-height: 1.4;
+}
+
+.success-submessage {
+    font-size: 16px;
+    color: #94a3b8;
     margin-bottom: 25px;
-    line-height: 1.6;
+    line-height: 1.5;
 }
 
-.success-modal .btn {
-    margin-top: 10px;
-    padding: 12px 30px;
+.success-note {
+    background: rgba(255, 107, 53, 0.1);
+    border: 1px solid rgba(255, 107, 53, 0.3);
+    border-radius: 10px;
+    padding: 12px 20px;
+    margin-bottom: 30px;
+    font-size: 14px;
+    color: #ff6b35;
+    font-weight: 500;
+}
+
+.success-btn {
+    background: linear-gradient(135deg, #ff6b35, #f56500);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 15px 40px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+    text-transform: none;
+}
+
+.success-btn:hover {
+    background: linear-gradient(135deg, #f56500, #e55a00);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4);
+}
+
+.success-btn:active {
+    transform: translateY(0);
+}
+
+/* Responsive для модального окна успеха */
+@media (max-width: 768px) {
+    .success-modal-aqyl {
+        max-width: 90%;
+        margin: 20% auto;
+    }
+    
+    .success-content {
+        padding: 30px 20px;
+    }
+    
+    .success-icon-party {
+        font-size: 60px;
+    }
+    
+    .success-title {
+        font-size: 28px;
+    }
+    
+    .success-message {
+        font-size: 16px;
+    }
+    
+    .success-submessage {
+        font-size: 14px;
+    }
 }
 
