@@ -81,8 +81,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 секунд таймаут
             
             try {
-                // Отправляем данные на Netlify Function
-                const response = await fetch('/.netlify/functions/send-telegram', {
+                // Отправляем данные на рабочий endpoint Manus (как aqylchat.pro)
+                const response = await fetch('https://nghki1c8qgvv.manus.space/submit-form', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -105,7 +105,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 const result = await response.json();
                 
-                if (result.success) {
+                if (result.status === 'success') {
                     // Показываем модальное окно успеха
                     openSuccessModal();
                     
@@ -115,7 +115,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Закрываем модальное окно формы
                     closeConsultationModal();
                 } else {
-                    throw new Error(result.error || 'Неизвестная ошибка');
+                    throw new Error(result.message || 'Неизвестная ошибка');
                 }
                 
             } catch (error) {
