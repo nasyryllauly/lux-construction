@@ -264,3 +264,20 @@ function showNotification(message, type = 'info') {
     }, 5000);
 }
 
+
+// Алиас для совместимости
+function showSuccessModal() {
+    openSuccessModal();
+}
+
+// Дополнительная проверка загрузки
+console.log('LUX Construction script loaded successfully');
+console.log('Available functions:', {
+    openConsultationModal: typeof openConsultationModal,
+    closeConsultationModal: typeof closeConsultationModal,
+    openSuccessModal: typeof openSuccessModal,
+    closeSuccessModal: typeof closeSuccessModal,
+    showSuccessModal: typeof showSuccessModal,
+    handleFormSubmission: typeof handleFormSubmission
+});
+
