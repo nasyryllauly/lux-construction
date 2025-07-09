@@ -103,8 +103,8 @@ async function handleFormSubmission(e, form, isModal) {
         let lastError;
         
         try {
-            // Отправляем данные на постоянный Flask endpoint
-            response = await fetch('https://5000-iswsnh2lveij3xt9596sd-620ec329.manusvm.computer/api/submit-form', {
+            // Отправляем данные на новый рабочий Flask endpoint
+            response = await fetch('https://ogh5izcvq1q1.manus.space/api/submit-form', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -121,9 +121,9 @@ async function handleFormSubmission(e, form, isModal) {
             console.warn('Primary endpoint failed, trying backup...', primaryError);
             lastError = primaryError;
             
-            // Резервный endpoint (развернутый сайт)
+            // Резервный endpoint (локальный)
             try {
-                response = await fetch('https://wdtlctzl.manus.space/api/submit-form', {
+                response = await fetch('http://localhost:5000/api/submit-form', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
