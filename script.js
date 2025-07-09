@@ -104,7 +104,7 @@ async function handleFormSubmission(e, form, isModal) {
         
         try {
             // Отправляем данные на новый рабочий Flask endpoint
-            response = await fetch('https://ogh5izcvq1q1.manus.space/api/submit-form', {
+            response = await fetch('https://5000-ioahnxefbk0rmp6ll3t7k-56ea436e.manusvm.computer/api/submit-form', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
