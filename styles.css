@@ -1121,8 +1121,7 @@ body {
     }
     
     .nav-logo .phone {
-        font-size: 0.9rem !important;
-        color: #2c5aa0 !important;
+        display: none !important;
     }
     
     .nav-container {
