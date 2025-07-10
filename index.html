@@ -3,632 +3,1961 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LUX Construction - Строительство будущего | Уникальная лицензия на атомную энергию</title>
-    <meta name="description" content="ТОО LUX Construction - единственная в регионе строительная компания с лицензией на атомную энергию. 15 лет опыта, 120 специалистов, полный комплекс услуг.">
-    <meta name="keywords" content="строительство Алматы, лицензия атомная энергия, медицинское оборудование, рентген кабинеты, LUX Construction">
-    <link rel="stylesheet" href="styles.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <meta name="description" content="ТОО Lux Construction - строительная компания полного цикла в Алматы. 15 лет опыта в капремонте инженерных сетей, строительстве дорог и спецработах.">
+    <meta property="og:title" content="Lux Construction - Строительная компания в Алматы">
+    <meta property="og:description" content="Капитальный ремонт инженерных сетей, строительство дорог, спецработы в грунтах. 15 лет на рынке Казахстана.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://luxconstruction.kz">
+    <meta property="og:image" content="https://luxconstruction.kz/assets/img/og-image.jpg">
+    <meta property="og:locale" content="ru_RU">
+    <title>Lux Construction - Строительная компания | Алматы</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Anton&display=swap" rel="stylesheet">
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
+    <style>
+        /* CSS Reset & Base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --lux-red: #E30613;
+            --white: #FFFFFF;
+            --black: #000000;
+            --dark-gray: #333333;
+            --light-gray: #F5F5F5;
+            --max-width: 1440px;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            font-weight: 400;
+            line-height: 1.6;
+            color: var(--dark-gray);
+            background-color: var(--white);
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Typography */
+        h1, h2, h3, h4, h5, h6 {
+            font-weight: 700;
+            line-height: 1.2;
+            color: var(--black);
+            margin-bottom: 1rem;
+        }
+
+        h1 { font-size: clamp(2rem, 5vw, 3.5rem); }
+        h2 { font-size: clamp(1.75rem, 4vw, 2.5rem); }
+        h3 { font-size: clamp(1.25rem, 3vw, 1.75rem); }
+
+        .text-red { color: var(--lux-red); }
+        
+        /* Loading States */
+        .loading {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .loading::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: loading 1.5s infinite;
+        }
+
+        @keyframes loading {
+            to { left: 100%; }
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes countUp {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+
+        .slide-up {
+            animation: slideUp 0.4s ease-out forwards;
+        }
+
+        /* Header & Navigation */
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: var(--black);
+            text-decoration: none;
+        }
+
+        .logo__icon {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: flex-end;
+            gap: 2px;
+        }
+
+        .logo__bar {
+            height: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .logo__bar--1 { width: 8px; height: 60%; background: #0099ff; }
+        .logo__bar--2 { width: 10px; height: 80%; background: #0099ff; }
+        .logo__bar--3 { width: 12px; height: 100%; background: #0099ff; }
+        .logo__bar--4 { width: 10px; height: 70%; background: var(--white); }
+        .logo__bar--5 { width: 8px; height: 60%; background: #0099ff; }
+
+        .logo:hover .logo__bar { transform: scaleY(0.9); }
+
+        .nav__menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav__link {
+            color: var(--dark-gray);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        .nav__link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--lux-red);
+            transition: width 0.3s ease;
+        }
+
+        .nav__link:hover { color: var(--lux-red); }
+        .nav__link:hover::after { width: 100%; }
+
+        .nav__cta {
+            background: var(--lux-red);
+            color: var(--white);
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(227, 6, 19, 0.2);
+        }
+
+        .nav__cta:hover {
+            background: #c70510;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(227, 6, 19, 0.3);
+        }
+
+        .nav__burger {
+            display: none;
+            flex-direction: column;
+            gap: 4px;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .nav__burger span {
+            width: 25px;
+            height: 3px;
+            background: var(--dark-gray);
+            transition: all 0.3s ease;
+        }
+
+        /* Hero Section */
+        #hero {
+            margin-top: 80px;
+            min-height: calc(100vh - 80px);
+            background: linear-gradient(135deg, #f5f5f5 0%, #ffffff 100%);
+            position: relative;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .hero__bg {
+            position: absolute;
+            top: 0;
+            right: -10%;
+            width: 60%;
+            height: 100%;
+            opacity: 0.05;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect x="10" y="20" width="15" height="60" fill="%23E30613"/><rect x="30" y="10" width="15" height="80" fill="%23E30613"/><rect x="50" y="5" width="20" height="90" fill="%23E30613"/><rect x="75" y="15" width="15" height="70" fill="%23E30613"/></svg>');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+
+        .hero__content {
+            position: relative;
+            z-index: 1;
+            padding: 4rem 0;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .hero__text h1 {
+            margin-bottom: 1.5rem;
+            animation: slideUp 0.6s ease-out;
+        }
+
+        .hero__text p {
+            font-size: 1.125rem;
+            margin-bottom: 2rem;
+            color: var(--dark-gray);
+            animation: slideUp 0.6s ease-out 0.2s both;
+        }
+
+        .hero__stats {
+            display: flex;
+            gap: 3rem;
+            margin-bottom: 2rem;
+            animation: slideUp 0.6s ease-out 0.4s both;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat__number {
+            font-family: 'Anton', sans-serif;
+            font-size: 3rem;
+            color: var(--lux-red);
+            line-height: 1;
+        }
+
+        .stat__label {
+            font-size: 0.875rem;
+            color: var(--dark-gray);
+            margin-top: 0.5rem;
+        }
+
+        .hero__cta {
+            display: inline-block;
+            background: var(--lux-red);
+            color: var(--white);
+            padding: 1rem 2rem;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.125rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(227, 6, 19, 0.3);
+            animation: slideUp 0.6s ease-out 0.6s both;
+        }
+
+        .hero__cta:hover {
+            background: #c70510;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 30px rgba(227, 6, 19, 0.4);
+        }
+
+        .hero__image {
+            position: relative;
+            animation: fadeIn 0.8s ease-out 0.4s both;
+        }
+
+        .hero__image::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            left: -20px;
+            right: 20px;
+            bottom: 20px;
+            background: var(--lux-red);
+            opacity: 0.1;
+            border-radius: 8px;
+            z-index: -1;
+        }
+
+        .hero__image-placeholder {
+            width: 100%;
+            height: 400px;
+            background: linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            font-size: 8rem;
+            color: var(--lux-red);
+            opacity: 0.2;
+        }
+
+        /* Icon styles */
+        .icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            font-size: 16px;
+            color: var(--lux-red);
+        }
+
+        .icon--large {
+            width: 60px;
+            height: 60px;
+            font-size: 32px;
+            background: rgba(227, 6, 19, 0.1);
+            border-radius: 50%;
+        }
+
+        /* Sections Base */
+        section {
+            padding: 5rem 0;
+            position: relative;
+        }
+
+        section:nth-child(even) {
+            background: var(--light-gray);
+        }
+
+        .section__header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .section__title {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+
+        .section__title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 4px;
+            background: var(--lux-red);
+            border-radius: 2px;
+        }
+
+        /* About Section */
+        .about__content {
+            max-width: 900px;
+            margin: 0 auto;
+            text-align: center;
+            font-size: 1.125rem;
+            line-height: 1.8;
+        }
+
+        .about__highlight {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .highlight__card {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .highlight__card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .highlight__number {
+            font-family: 'Anton', sans-serif;
+            font-size: 2.5rem;
+            color: var(--lux-red);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Services Section */
+        .services__grid {
+            display: grid;
+            gap: 3rem;
+        }
+
+        .service {
+            background: var(--white);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .service:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .service__header {
+            background: var(--lux-red);
+            color: var(--white);
+            padding: 2rem;
+            position: relative;
+        }
+
+        .service__icon {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            font-size: 3rem;
+            opacity: 0.2;
+        }
+
+        .service__title {
+            color: var(--white);
+            margin-bottom: 0.5rem;
+        }
+
+        .service__content {
+            padding: 2rem;
+        }
+
+        .service__list {
+            list-style: none;
+        }
+
+        .service__item {
+            padding: 1rem 0;
+            padding-left: 2rem;
+            position: relative;
+            border-bottom: 1px solid #eee;
+        }
+
+        .service__item:last-child {
+            border-bottom: none;
+        }
+
+        .service__item::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            top: 1rem;
+            color: var(--lux-red);
+            font-weight: bold;
+        }
+
+        /* Projects Section */
+        .projects__filters {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .filter__btn {
+            padding: 0.75rem 1.5rem;
+            border: 2px solid var(--lux-red);
+            background: var(--white);
+            color: var(--lux-red);
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .filter__btn:hover,
+        .filter__btn.active {
+            background: var(--lux-red);
+            color: var(--white);
+        }
+
+        .projects__table-wrapper {
+            background: var(--white);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            margin-bottom: 3rem;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 600px;
+        }
+
+        th {
+            background: var(--lux-red);
+            color: var(--white);
+            padding: 1.25rem;
+            text-align: left;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 1.25rem;
+            border-bottom: 1px solid #eee;
+            vertical-align: top;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover {
+            background: var(--light-gray);
+        }
+
+        .projects__cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .project__card {
+            background: var(--white);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .project__card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .project__image {
+            height: 200px;
+            background: linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 100%);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            color: var(--lux-red);
+            opacity: 0.2;
+        }
+
+        .project__info {
+            padding: 1.5rem;
+        }
+
+        .project__title {
+            font-size: 1.125rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .project__meta {
+            color: var(--dark-gray);
+            font-size: 0.875rem;
+        }
+
+        /* Equipment Section */
+        .equipment__grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .equipment__card {
+            background: var(--white);
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .equipment__card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .equipment__image {
+            width: 100%;
+            height: 150px;
+            background: linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 100%);
+            border-radius: 4px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: var(--lux-red);
+            opacity: 0.3;
+        }
+
+        .equipment__name {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .equipment__details {
+            font-size: 0.875rem;
+            color: var(--dark-gray);
+        }
+
+        .equipment__quantity {
+            margin-top: 0.5rem;
+            color: var(--lux-red);
+            font-weight: 600;
+        }
+
+        /* Licenses Section */
+        .licenses__grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .license__card {
+            background: var(--white);
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .license__card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .license__image {
+            width: 100%;
+            height: 400px;
+            background: linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 100%);
+            border-radius: 4px;
+            margin-bottom: 1rem;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 5rem;
+            color: var(--lux-red);
+            opacity: 0.2;
+        }
+
+        /* Contact Section */
+        #contact {
+            background: var(--light-gray);
+        }
+
+        .contact__content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: start;
+        }
+
+        .contact__info h3 {
+            margin-bottom: 2rem;
+        }
+
+        .contact__item {
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: start;
+            gap: 1rem;
+        }
+
+        .contact__label {
+            font-weight: 600;
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        .contact__form {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .form__group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form__label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .form__input,
+        .form__textarea {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+
+        .form__input:focus,
+        .form__textarea:focus {
+            outline: none;
+            border-color: var(--lux-red);
+            box-shadow: 0 0 0 3px rgba(227, 6, 19, 0.1);
+        }
+
+        .form__input.error {
+            border-color: #dc3545;
+        }
+
+        .form__error {
+            color: #dc3545;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+
+        .form__textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .form__submit {
+            width: 100%;
+            padding: 1rem;
+            background: var(--lux-red);
+            color: var(--white);
+            border: none;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .form__submit:hover:not(:disabled) {
+            background: #c70510;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(227, 6, 19, 0.3);
+        }
+
+        .form__submit:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .form__success {
+            background: #d4edda;
+            color: #155724;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .map {
+            margin-top: 3rem;
+            height: 400px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            background: #f0f0f0;
+            position: relative;
+        }
+
+        .map__loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: var(--dark-gray);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--dark-gray);
+            color: var(--white);
+            padding: 3rem 0;
+            text-align: center;
+        }
+
+        .footer__content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer__logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--white);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+
+        .footer__nav {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .footer__link {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer__link:hover {
+            color: var(--white);
+        }
+
+        .footer__copy {
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.875rem;
+        }
+
+        /* Lightbox */
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 2000;
+            cursor: pointer;
+        }
+
+        .lightbox__content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            max-width: 90%;
+            max-height: 90%;
+            text-align: center;
+        }
+
+        .lightbox__content img {
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
+        }
+
+        .lightbox__close {
+            position: absolute;
+            top: 20px;
+            right: 40px;
+            color: var(--white);
+            font-size: 2rem;
+            cursor: pointer;
+            transition: opacity 0.3s ease;
+        }
+
+        .lightbox__close:hover {
+            opacity: 0.7;
+        }
+
+        .lightbox__loading {
+            color: var(--white);
+            font-size: 1.5rem;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 1200px) {
+            .container {
+                padding: 0 40px;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .hero__content {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .hero__image {
+                order: -1;
+                max-width: 500px;
+                margin: 0 auto;
+            }
+
+            .hero__stats {
+                justify-content: center;
+            }
+
+            .contact__content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav__menu {
+                position: fixed;
+                top: 70px;
+                left: -100%;
+                width: 100%;
+                height: calc(100vh - 70px);
+                background: var(--white);
+                flex-direction: column;
+                padding: 2rem;
+                transition: left 0.3s ease;
+                box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            }
+
+            .nav__menu.active {
+                left: 0;
+            }
+
+            .nav__burger {
+                display: flex;
+            }
+
+            .nav__burger.active span:nth-child(1) {
+                transform: rotate(45deg) translate(5px, 5px);
+            }
+
+            .nav__burger.active span:nth-child(2) {
+                opacity: 0;
+            }
+
+            .nav__burger.active span:nth-child(3) {
+                transform: rotate(-45deg) translate(5px, -5px);
+            }
+
+            .about__highlight,
+            .equipment__grid {
+                grid-template-columns: 1fr;
+            }
+
+            .projects__cards {
+                grid-template-columns: 1fr;
+            }
+
+            h1 { font-size: 2rem; }
+            h2 { font-size: 1.75rem; }
+            h3 { font-size: 1.25rem; }
+
+            .hero__stats {
+                gap: 2rem;
+            }
+
+            .stat__number {
+                font-size: 2rem;
+            }
+
+            section {
+                padding: 3rem 0;
+            }
+
+            .footer__content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .footer__nav {
+                justify-content: center;
+            }
+
+            /* Better table display on mobile */
+            .projects__table-wrapper {
+                font-size: 0.875rem;
+            }
+
+            th, td {
+                padding: 0.75rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .container {
+                padding: 0 20px;
+            }
+
+            .projects__filters {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .filter__btn {
+                width: 100%;
+            }
+        }
+
+        /* Accessibility */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        /* WhatsApp and Telegram Widgets */
+        .social-widgets {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .widget {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            color: white;
+            font-size: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            animation: pulse 2s infinite;
+        }
+
+        .widget:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .whatsapp-widget {
+            background: #25D366;
+        }
+
+        .telegram-widget {
+            background: #0088cc;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            }
+            50% {
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            }
+            100% {
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .social-widgets {
+                bottom: 15px;
+                right: 15px;
+            }
+            
+            .widget {
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+            }
+        }
+
+        /* Print Styles */
+        @media print {
+            header, footer, .nav__cta, .hero__cta, .form__submit, .social-widgets {
+                display: none;
+            }
+
+            body {
+                font-size: 12pt;
+                line-height: 1.5;
+            }
+
+            section {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
 </head>
 <body>
-    <!-- Google Tag Manager (noscript) -->
-    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5KGTSQK5"
-    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-    <!-- End Google Tag Manager (noscript) -->
-    
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5KGTSQK5"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
     <!-- Header -->
-    <header class="header">
-        <nav class="navbar">
-            <div class="nav-container">
-                <div class="nav-logo">
-                    <h2>LUX Construction</h2>
-                    <span class="phone">+7 707 660 10 87</span>
+    <header>
+        <nav class="container">
+            <a href="#" class="logo">
+                <div class="logo__icon">
+                    <span class="logo__bar logo__bar--1"></span>
+                    <span class="logo__bar logo__bar--2"></span>
+                    <span class="logo__bar logo__bar--3"></span>
+                    <span class="logo__bar logo__bar--4"></span>
+                    <span class="logo__bar logo__bar--5"></span>
                 </div>
-                <div class="mobile-menu-toggle">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </div>
-                <ul class="nav-menu">
-                    <li><a href="#about">О компании</a></li>
-                    <li><a href="#services">Услуги</a></li>
-                    <li><a href="#projects">Проекты</a></li>
-                    <li><a href="#equipment">Техника</a></li>
-                    <li><a href="#licenses">Лицензии</a></li>
-                    <li><a href="#contacts">Контакты</a></li>
-                </ul>
+                Lux Construction
+            </a>
+            <ul class="nav__menu" id="navMenu">
+                <li><a href="#about" class="nav__link">О компании</a></li>
+                <li><a href="#services" class="nav__link">Услуги</a></li>
+                <li><a href="#projects" class="nav__link">Проекты</a></li>
+                <li><a href="#equipment" class="nav__link">Техника</a></li>
+                <li><a href="#licenses" class="nav__link">Лицензии</a></li>
+                <li><a href="#contact" class="nav__link">Контакты</a></li>
+            </ul>
+            <a href="#contact" class="nav__cta">Получить КП</a>
+            <div class="nav__burger" id="navBurger">
+                <span></span>
+                <span></span>
+                <span></span>
             </div>
         </nav>
     </header>
 
     <!-- Hero Section -->
-    <section class="hero">
-        <div class="container">
-            <div class="hero-content">
-                <h1>LUX CONSTRUCTION</h1>
-                <p class="hero-subtitle">Строительство будущего</p>
-                <p class="hero-description">15 лет опыта в строительстве. Полный комплекс услуг от проекта до сдачи объекта. 120 специалистов и современная техника. Уникальные лицензии для высокотехнологичных проектов.</p>
-                <div class="hero-buttons">
-                    <a href="#contacts" class="btn btn-primary">Получить консультацию</a>
-                    <a href="#projects" class="btn btn-secondary">Наши проекты</a>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Stats Section -->
-    <section class="stats">
-        <div class="container">
-            <div class="stats-grid">
-                <div class="stat-item">
-                    <div class="stat-number">15+</div>
-                    <div class="stat-label">лет опыта</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number">100+</div>
-                    <div class="stat-label">специалистов</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number">500+</div>
-                    <div class="stat-label">проектов</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number">2</div>
-                    <div class="stat-label">уникальные лицензии</div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- About Section -->
-    <section id="about" class="section">
-        <div class="container">
-            <h2 class="section-title">О компании</h2>
-            <p class="section-subtitle">Профессиональное строительство с 2007 года</p>
-            <div class="about-content">
-                <div class="about-text">
-                    <p>Компания ТОО «LUX Construction» является строительной организацией, осуществляющей полный комплекс проектных, строительных, монтажных и ремонтных работ на объектах различного целевого назначения.</p>
-                    <p>Основанная в 2007 году, компания успешно существует на рынке Казахстана уже 15 лет. Высокий профессиональный уровень управления строительством, использование инновационных инженерных решений и технологий строительства обеспечили компании успех на региональном строительном рынке.</p>
-                    
-                    <div class="company-info card">
-                        <h3>Руководство компании</h3>
-                        <p><strong>Директор и собственник:</strong> Белиславец Ерлан Носипович</p>
-                        <p><strong>Доля владения:</strong> 100%</p>
-                        <p><strong>БИН:</strong> 070240010115</p>
-                        <p><strong>Дата регистрации:</strong> 12 апреля 2007 года</p>
-                    </div>
-                </div>
-                <div class="about-features">
-                    <div class="feature">
-                        <i class="fas fa-certificate"></i>
-                        <div>
-                            <h4>Уникальные лицензии</h4>
-                            <p>Две действующие лицензии, включая редкую лицензию на атомную энергию</p>
+    <main>
+        <section id="hero">
+            <div class="hero__bg"></div>
+            <div class="container">
+                <div class="hero__content">
+                    <div class="hero__text">
+                        <h1>Строим будущее <span class="text-red">вместе</span></h1>
+                        <p>Компания ТОО «Lux Construction» является строительной организацией, осуществляющей полный комплекс проектных, строительных, монтажных и ремонтных работ на объектах различного целевого назначения.</p>
+                        <div class="hero__stats">
+                            <div class="stat">
+                                <div class="stat__number" id="yearsCount">15</div>
+                                <div class="stat__label">лет на рынке</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat__number" id="staffCount">100+</div>
+                                <div class="stat__label">специалистов</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat__number">500+</div>
+                                <div class="stat__label">человек на проектах</div>
+                            </div>
                         </div>
+                        <a href="#contact" class="hero__cta">Связаться с нами</a>
                     </div>
-                    <div class="feature">
-                        <i class="fas fa-tools"></i>
-                        <div>
-                            <h4>Современное оборудование</h4>
-                            <p>Собственный парк техники для выполнения любых строительных задач</p>
-                        </div>
-                    </div>
-                    <div class="feature">
-                        <i class="fas fa-users"></i>
-                        <div>
-                            <h4>Опытная команда</h4>
-                            <p>120 квалифицированных специалистов с многолетним опытом</p>
-                        </div>
-                    </div>
-                    <div class="feature">
-                        <i class="fas fa-shield-alt"></i>
-                        <h4>Гарантия качества</h4>
-                        <p>Полная ответственность за качество выполненных работ</p>
+                    <div class="hero__image">
+                        <img src="./photos/construction_crane.jpg" alt="Строительный кран Lux Construction" style="width: 100%; height: 400px; object-fit: cover; border-radius: 8px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);">
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Services Section -->
-    <section id="services" class="services section">
-        <div class="container">
-            <h2 class="section-title">Наши услуги</h2>
-            <p class="section-subtitle">Полный комплекс строительных услуг от проектирования до сдачи объекта</p>
-            
-            <div class="services-grid">
-                <!-- Traditional Services -->
-                <div class="service-card card">
-                    <div class="service-icon">
-                        <i class="fas fa-plug"></i>
-                    </div>
-                    <h3>Инженерные сети</h3>
-                    <p>Электроснабжение, водоснабжение, канализация, газоснабжение</p>
-                    <ul>
-                        <li>Сети электроснабжения</li>
-                        <li>Водоснабжение и канализация</li>
-                        <li>Газоснабжение</li>
-                    </ul>
+        <!-- About Section -->
+        <section id="about">
+            <div class="container">
+                <div class="section__header">
+                    <h2 class="section__title">О компании</h2>
                 </div>
-
-                <div class="service-card card">
-                    <div class="service-icon">
-                        <i class="fas fa-road"></i>
-                    </div>
-                    <h3>Дорожное строительство</h3>
-                    <p>Автомобильные дороги, аэродромы, городские магистрали</p>
-                    <ul>
-                        <li>Автомобильные дороги</li>
-                        <li>Взлетно-посадочные полосы</li>
-                        <li>Городские магистрали</li>
-                        <li>Железнодорожные пути</li>
-                    </ul>
+                <div class="about__content">
+                    <p>Компания ТОО «Lux Construction» является строительной организацией, осуществляющей полный комплекс проектных, строительных, монтажных и ремонтных работ на объектах различного целевого назначения. Компания основана в 2007 году и успешно существует на рынке Казахстана уже 15 лет.</p>
+                    <p>Компания ТОО «Lux Construction» – динамично развивающаяся компания. Высокий профессиональный уровень управления строительством, использование инновационных инженерных решений и технологий строительства, опытный персонал и современная материально-техническая база обеспечили компании успех на региональном строительном рынке и за его пределами, а ее клиентам – высокое качество строительных работ, соблюдение установленных сроков строительства и оптимизацию финансовых затрат.</p>
+                    <p>Постоянный штат компании составляет более 100 человек, производственные мощности позволяют для реализации отдельных строительных проектов увеличивать штат до 500 и более человек.</p>
                 </div>
-
-                <div class="service-card card">
-                    <div class="service-icon">
-                        <i class="fas fa-hard-hat"></i>
+                <div class="about__highlight">
+                    <div class="highlight__card fade-in">
+                        <span class="icon icon--large">🏢</span>
+                        <div class="highlight__number">2007</div>
+                        <h3>Год основания</h3>
+                        <p>Надежный партнер с 2007 года</p>
                     </div>
-                    <h3>Специальные работы</h3>
-                    <p>Буровые работы, несущие конструкции, кровельные работы</p>
-                    <ul>
-                        <li>Буровые работы</li>
-                        <li>Несущие конструкции</li>
-                        <li>Кровельные работы</li>
-                        <li>Шпунтовые работы</li>
-                    </ul>
-                </div>
-
-                <!-- NEW: High-tech Services -->
-                <div class="service-card card card-special">
-                    <div class="service-icon">
-                        <i class="fas fa-atom"></i>
+                    <div class="highlight__card fade-in">
+                        <span class="icon icon--large">👷</span>
+                        <div class="highlight__number">100+</div>
+                        <h3>Постоянный штат</h3>
+                        <p>Опытные специалисты</p>
                     </div>
-                    <h3>Высокотехнологичные услуги</h3>
-                    <div class="special-badge">⚡ Уникальная лицензия на атомную энергию</div>
-                    <ul>
-                        <li>Техобслуживание медицинского оборудования</li>
-                        <li>Рентгеновское оборудование для аэропортов</li>
-                        <li>Работы с радиоактивными материалами</li>
-                        <li>Досмотровое оборудование</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Projects Section -->
-    <section id="projects" class="projects">
-        <div class="container">
-            <h2>Наши проекты</h2>
-            <p class="section-subtitle">Более 500 успешно реализованных проектов за 15 лет работы</p>
-            
-            <div class="projects-grid">
-                <div class="project-card">
-                    <div class="project-image">
-                        <img src="images/astana-construction.jpg" alt="Жилые комплексы">
-                    </div>
-                    <div class="project-info">
-                        <h3>Жилые комплексы</h3>
-                        <p><strong>12-ти этажные жилые дома в АДЦ г. Туркестан. Участок №8» Дом 16 и Дом 17</strong></p>
-                        <p>Период: 2020-2022 гг.</p>
-                        <p>Полный цикл строительства многоэтажных жилых домов с современной инфраструктурой</p>
-                    </div>
-                </div>
-
-                <div class="project-card">
-                    <div class="project-image">
-                        <img src="images/construction-site.jpg" alt="Дорожное строительство">
-                    </div>
-                    <div class="project-info">
-                        <h3>Дорожное строительство</h3>
-                        <p><strong>Автомобильные дороги Алматинской области</strong></p>
-                        <p>Период: 2015-2023 гг.</p>
-                        <p>Строительство и реконструкция автомобильных дорог различных категорий</p>
-                    </div>
-                </div>
-
-                <div class="project-card">
-                    <div class="project-image">
-                        <img src="images/modern-building.jpg" alt="Промышленные объекты">
-                    </div>
-                    <div class="project-info">
-                        <h3>Промышленные объекты</h3>
-                        <p><strong>Производственные комплексы</strong></p>
-                        <p>Период: 2018-2024 гг.</p>
-                        <p>Строительство промышленных зданий и сооружений различного назначения</p>
-                    </div>
-                </div>
-
-                <div class="project-card special">
-                    <div class="project-image">
-                        <i class="fas fa-hospital"></i>
-                    </div>
-                    <div class="project-info">
-                        <h3>Медицинские объекты</h3>
-                        <p><strong>Рентген-кабинеты и медицинские центры</strong></p>
-                        <p>Период: 2024 г.</p>
-                        <p>⚡ Специализированные работы с лицензией на атомную энергию</p>
-                    </div>
-                </div>
-
-                <div class="project-card">
-                    <div class="project-image">
-                        <i class="fas fa-plug"></i>
-                    </div>
-                    <div class="project-info">
-                        <h3>Инженерные сети</h3>
-                        <p><strong>Электроснабжение и водоснабжение</strong></p>
-                        <p>Период: 2010-2024 гг.</p>
-                        <p>Прокладка и монтаж инженерных коммуникаций</p>
-                    </div>
-                </div>
-
-                <div class="project-card">
-                    <div class="project-image">
-                        <i class="fas fa-plane"></i>
-                    </div>
-                    <div class="project-info">
-                        <h3>Аэродромы</h3>
-                        <p><strong>Взлетно-посадочные полосы</strong></p>
-                        <p>Период: 2016-2020 гг.</p>
-                        <p>Строительство и реконструкция аэродромных покрытий</p>
+                    <div class="highlight__card fade-in">
+                        <span class="icon icon--large">⚡</span>
+                        <div class="highlight__number">500+</div>
+                        <h3>На проектах</h3>
+                        <p>Производственные мощности</p>
                     </div>
                 </div>
             </div>
+        </section>
 
-            <div class="project-stats">
-                <div class="project-stat">
-                    <div class="stat-number">500+</div>
-                    <div class="stat-label">Завершенных проектов</div>
+        <!-- Services Section -->
+        <section id="services">
+            <div class="container">
+                <div class="section__header">
+                    <h2 class="section__title">Наши услуги</h2>
                 </div>
-                <div class="project-stat">
-                    <div class="stat-number">15</div>
-                    <div class="stat-label">Лет опыта</div>
-                </div>
-                <div class="project-stat">
-                    <div class="stat-number">100%</div>
-                    <div class="stat-label">Довольных клиентов</div>
-                </div>
-            </div>
-        </div>
-    </section>
+                <div class="services__grid">
+                    <!-- Service 1 -->
+                    <div class="service fade-in">
+                        <div class="service__header">
+                            <span class="service__icon">⚡</span>
+                            <h3 class="service__title">Капитальный ремонт и реконструкция инженерных сетей</h3>
+                        </div>
+                        <div class="service__content">
+                            <ul class="service__list">
+                                <li class="service__item">Сетей электроснабжения и устройства наружного электроосвещения, внутренних систем электроосвещения и электро-отопления</li>
+                                <li class="service__item">Сетей холодного и горячего водоснабжения, теплоснабжения, централизованной канализации бытовых, производственных и ливневых стоков, устройства внутренних систем водопровода, отопления и канализации</li>
+                                <li class="service__item">Сетей газоснабжения высокого и среднего давления, бытового и производственного газоснабжения низкого давления, внутренних систем газоснабжения</li>
+                            </ul>
+                        </div>
+                    </div>
 
-    <!-- Equipment Section -->
-    <section id="equipment" class="equipment">
-        <div class="equipment-hero">
-            <img src="images/excavator.jpg" alt="Строительная техника" class="equipment-bg">
-            <div class="equipment-overlay">
-                <div class="container">
-                    <h2>Наша техника</h2>
-                    <p class="section-subtitle">Собственный парк современной строительной техники</p>
-                </div>
-            </div>
-        </div>
-        <div class="container">
-            
-            <div class="equipment-categories">
-                <div class="equipment-category">
-                    <h3><i class="fas fa-truck"></i> Грузовая техника</h3>
-                    <div class="equipment-list">
-                        <div class="equipment-item">
-                            <strong>Самосвал HOWO 25 тн</strong>
-                            <span>2013 г.в. - В наличии: 5 ед.</span>
+                    <!-- Service 2 -->
+                    <div class="service fade-in">
+                        <div class="service__header">
+                            <span class="service__icon">🚧</span>
+                            <h3 class="service__title">Строительство автомобильных и железных дорог</h3>
                         </div>
-                        <div class="equipment-item">
-                            <strong>Автокран 25тн на базе КАМАЗ</strong>
-                            <span>2010 г.в. - В наличии: 3 ед.</span>
-                        </div>
-                        <div class="equipment-item">
-                            <strong>Тягач HOWO</strong>
-                            <span>2013 г.в. - В наличии: 1 ед.</span>
-                        </div>
-                        <div class="equipment-item">
-                            <strong>Трал Sutong</strong>
-                            <span>2013 г.в. - В наличии: 1 ед.</span>
-                        </div>
-                        <div class="equipment-item">
-                            <strong>Автомобиль Mitsubishi Pajero Sport</strong>
-                            <span>2013 г.в. - В наличии: 1 ед.</span>
-                        </div>
-                        <div class="equipment-item">
-                            <strong>Автомобиль Toyota Hilux</strong>
-                            <span>2008 г.в. - В наличии: 2 ед.</span>
+                        <div class="service__content">
+                            <ul class="service__list">
+                                <li class="service__item">Основания и покрытия взлетно-посадочных полос аэродромов и вертолетных площадок</li>
+                                <li class="service__item">Основания и покрытия, защитные сооружения и обустройство автомобильных дорог III, IV и V технической категории, а также проезжей части улиц населенных пунктов, не являющихся магистральными</li>
+                                <li class="service__item">Основания и покрытия, защитные сооружения и обустройство автомобильных дорог I и II технической категории, а также внутригородских магистральных дорог скоростного и регулируемого движения, проезжей части магистральных улиц общегородского значения непрерывного и регулируемого движения</li>
+                            </ul>
                         </div>
                     </div>
-                </div>
 
-                <div class="equipment-category">
-                    <h3><i class="fas fa-cogs"></i> Спецтехника</h3>
-                    <div class="equipment-list">
-                        <div class="equipment-item">
-                            <strong>Автогрейдер XCMG GR215</strong>
-                            <span>2013 г.в. - В наличии: 1 ед.</span>
+                    <!-- Service 3 -->
+                    <div class="service fade-in">
+                        <div class="service__header">
+                            <span class="service__icon">🏗️</span>
+                            <h3 class="service__title">Специальные работы в грунтах и возведение конструкций</h3>
                         </div>
-                        <div class="equipment-item">
-                            <strong>Двухбарабанный вибро каток XCMG YZC10</strong>
-                            <span>2013 г.в. - В наличии: 1 ед.</span>
-                        </div>
-                        <div class="equipment-item">
-                            <strong>Фронтальный погрузчик XCMG LW 500FL</strong>
-                            <span>2013 г.в. - В наличии: 2 ед.</span>
-                        </div>
-                        <div class="equipment-item">
-                            <strong>Однобарабанный вибрационный каток XCMG XS162J</strong>
-                            <span>2013 г.в. - В наличии: 2 ед.</span>
-                        </div>
-                        <div class="equipment-item">
-                            <strong>Бульдозер SHENWA TY165-2</strong>
-                            <span>2013 г.в. - В наличии: 2 ед.</span>
-                        </div>
-                        <div class="equipment-item">
-                            <strong>Экскаватор HITACHI ZAXIS 280</strong>
-                            <span>2013 г.в. - В наличии: 1 ед.</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="equipment-category special">
-                    <h3><i class="fas fa-atom"></i> Специализированное оборудование</h3>
-                    <div class="equipment-list">
-                        <div class="equipment-item">
-                            <strong>Рентгеновские сканеры</strong>
-                            <span>⚡ Лицензия на атомную энергию</span>
-                        </div>
-                        <div class="equipment-item">
-                            <strong>Досмотровое оборудование</strong>
-                            <span>Для аэропортов и границ</span>
-                        </div>
-                        <div class="equipment-item">
-                            <strong>Медицинское оборудование</strong>
-                            <span>Техобслуживание и монтаж</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="equipment-advantages">
-                <h3>Преимущества собственного парка техники</h3>
-                <div class="advantages-grid">
-                    <div class="advantage">
-                        <i class="fas fa-clock"></i>
-                        <h4>Оперативность</h4>
-                        <p>Быстрое реагирование на потребности проекта</p>
-                    </div>
-                    <div class="advantage">
-                        <i class="fas fa-dollar-sign"></i>
-                        <h4>Экономия</h4>
-                        <p>Снижение затрат на аренду техники</p>
-                    </div>
-                    <div class="advantage">
-                        <i class="fas fa-shield-alt"></i>
-                        <h4>Надежность</h4>
-                        <p>Регулярное техобслуживание и контроль качества</p>
-                    </div>
-                    <div class="advantage">
-                        <i class="fas fa-wrench"></i>
-                        <h4>Универсальность</h4>
-                        <p>Техника для любых видов строительных работ</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Licenses Section -->
-    <section id="licenses" class="licenses">
-        <div class="container">
-            <h2>Лицензии и сертификаты</h2>
-            <p class="section-subtitle">Официальные разрешения на выполнение всех видов работ</p>
-            
-            <div class="licenses-grid">
-                <div class="license-card">
-                    <div class="license-header">
-                        <i class="fas fa-building"></i>
-                        <h3>Строительно-монтажные работы</h3>
-                    </div>
-                    <div class="license-details">
-                        <p><strong>Номер лицензии:</strong> 20001953</p>
-                        <p><strong>Дата выдачи:</strong> 26 мая 2023 года</p>
-                        <p><strong>Срок действия:</strong> Бессрочная</p>
-                        <p><strong>Категория:</strong> 1 класс</p>
-                        <p><strong>Лицензиар:</strong> КГУ «Управление градостроительного контроля г. Алматы»</p>
-                    </div>
-                </div>
-
-                <div class="license-card special">
-                    <div class="license-header">
-                        <i class="fas fa-atom"></i>
-                        <h3>Атомная энергия</h3>
-                        <span class="unique-badge">⚡ УНИКАЛЬНАЯ</span>
-                    </div>
-                    <div class="license-details">
-                        <p><strong>Номер лицензии:</strong> 24024624</p>
-                        <p><strong>Дата выдачи:</strong> 26 июля 2024 года</p>
-                        <p><strong>Срок действия:</strong> до 26 июля 2029 года</p>
-                        <p><strong>Категория:</strong> 1 класс</p>
-                        <p><strong>Лицензиар:</strong> ГУ «Комитет атомного и энергетического надзора и контроля» МЭ РК</p>
-                        
-                        <div class="license-scope">
-                            <h4>Виды деятельности:</h4>
-                            <ul>
-                                <li>Техническое обслуживание радиоизотопного оборудования</li>
-                                <li>Монтаж и ремонт медицинского оборудования</li>
-                                <li>Рентгеновское оборудование для досмотра</li>
-                                <li>Оборудование для транспорта и багажа</li>
+                        <div class="service__content">
+                            <h4>Специальные работы в грунтах:</h4>
+                            <ul class="service__list">
+                                <li class="service__item">Буровые работы в грунте</li>
+                                <li class="service__item">Устройство оснований</li>
+                            </ul>
+                            <h4 style="margin-top: 1.5rem;">Возведение несущих и (или) ограждающих конструкций зданий и сооружений:</h4>
+                            <ul class="service__list">
+                                <li class="service__item">Монтаж строительных конструкций подъемных сооружений</li>
+                                <li class="service__item">Горнопроходческие и тоннельные работы, устройство противофильтрационных завес</li>
+                                <li class="service__item">Кровельные работы</li>
+                                <li class="service__item">Устройство монолитных, а также монтаж сборных бетонных и железобетонных конструкций, кладка штучных элементов стен и перегородок и заполнение проемов</li>
                             </ul>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Contact Section -->
-    <section id="contacts" class="contacts">
-        <div class="container">
-            <h2>Свяжитесь с нами</h2>
-            <p class="section-subtitle">Получите бесплатную консультацию и расчет стоимости проекта</p>
-            
-            <div class="contacts-content">
-                <div class="contact-form">
-                    <h3>Отправить заявку</h3>
-                    <p>Заполните форму и мы свяжемся с вами в течение 24 часов</p>
-                    <form id="mainContactForm">
-                        <input type="text" name="name" placeholder="Ваше имя" required>
-                        <input type="tel" name="phone" placeholder="Телефон" required>
-                        <input type="email" name="email" placeholder="Email">
-                        <textarea name="message" placeholder="Описание проекта"></textarea>
-                        <button type="submit" class="btn btn-primary">Отправить заявку</button>
-                    </form>
+        <!-- Projects Section -->
+        <section id="projects">
+            <div class="container">
+                <div class="section__header">
+                    <h2 class="section__title">Наши проекты</h2>
                 </div>
                 
-                <div class="contact-info">
-                    <h3>Контактная информация</h3>
-                    
-                    <div class="contact-item">
-                        <i class="fas fa-phone"></i>
-                        <div>
-                            <p><strong>Основной телефон:</strong></p>
-                            <p>+7 707 660 10 87</p>
+                <div class="projects__filters">
+                    <button class="filter__btn active" data-filter="all">Все проекты</button>
+                    <button class="filter__btn" data-filter="engineering">Инженерные сети</button>
+                    <button class="filter__btn" data-filter="roads">Дороги</button>
+                    <button class="filter__btn" data-filter="residential">Жилые дома</button>
+                </div>
+
+                <div class="projects__table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Наименование объекта</th>
+                                <th>Место выполнение работ</th>
+                                <th>Год</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr data-category="engineering">
+                                <td>Замена магистрального трубопровода по передаче горячей и холодной воды</td>
+                                <td>Восточно-Казахстанская обл., Жарминский р-н, п.Жангиз-Тобе, в/ч 2544</td>
+                                <td>2010-2011</td>
+                            </tr>
+                            <tr data-category="engineering">
+                                <td>Капитальный ремонт и реконструкция сетей электроснабжения и устройства наружного электроосвещения</td>
+                                <td>Восточно-Казахстанская обл., г.Курчум, в/ч 2535</td>
+                                <td>2011-2012</td>
+                            </tr>
+                            <tr data-category="engineering">
+                                <td>Замене корпуса газового котла и пуско-наладочной работы</td>
+                                <td>Кызылординская обл., г.Кызылорда, в/ч 2019</td>
+                                <td>2012-2013</td>
+                            </tr>
+                            <tr data-category="engineering">
+                                <td>Капитальный ремонт сетей теплоснабжения</td>
+                                <td>Южно-Казахстанская обл., г.Сарыагаш, в/ч 2020</td>
+                                <td>2012-2013</td>
+                            </tr>
+                            <tr data-category="engineering">
+                                <td>Капиальный ремонт централизованной канализации</td>
+                                <td>Жамбылская обл., г.Тараз, в/ч 2035</td>
+                                <td>2014-2015</td>
+                            </tr>
+                            <tr data-category="engineering">
+                                <td>Капитальный ремонт устройств внутренних систем водопровода, отопления и канализации</td>
+                                <td>Южно-Казахстанская обл., с.Мырзакент, в/ч 2037</td>
+                                <td>2014-2016</td>
+                            </tr>
+                            <tr data-category="engineering">
+                                <td>Капитальный ремонт магистрального трубопровода теплоснабжения</td>
+                                <td>г. Кызылорда</td>
+                                <td>2017-2018</td>
+                            </tr>
+                            <tr data-category="roads">
+                                <td>Установка ангара для инспекционно-досмотрового комплекса пункта пропуска "Жайсан" автомобильной войсковой части 2030</td>
+                                <td>Актюбинская область, Мартукский район, пос. Жайсан</td>
+                                <td>2018-2019</td>
+                            </tr>
+                            <tr data-category="residential">
+                                <td>Строительство 12-ти этажных жилых домов в АДЦ г. Туркестан. Участок №8» Дом 16</td>
+                                <td>Туркестанская область, г. Туркестан. Участок №8» Дом 16</td>
+                                <td>2020-2022</td>
+                            </tr>
+                            <tr data-category="residential">
+                                <td>Строительство 12-ти этажных жилых домов в АДЦ г. Туркестан. Участок №8» Дом 17</td>
+                                <td>Туркестанская область, г. Туркестан. Участок №8» Дом 17</td>
+                                <td>2020-2022</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="projects__cards">
+                    <div class="project__card fade-in" data-category="residential">
+                        <div class="project__image">
+                            <img src="./photos/city_construction.jpg" alt="Строительство жилых домов" style="width: 100%; height: 200px; object-fit: cover;">
+                        </div>
+                        <div class="project__info">
+                            <h3 class="project__title">«Строительство 12-ти этажных жилых домов в АДЦ г. Туркестан. Участок №8» Дом 16, расположенного по адресу: Туркестанская область, г. Туркестан. Участок №8» Дом 16</h3>
+                            <p class="project__meta">2020-2022</p>
                         </div>
                     </div>
-                    
-                    <div class="address-info">
-                        <i class="fas fa-map-marker-alt"></i>
-                        <div>
-                            <p><strong>Юридический адрес:</strong></p>
-                            <p>г. Алматы, ул. Жандосова 98, офис 310</p>
+                    <div class="project__card fade-in" data-category="residential">
+                        <div class="project__image">
+                            <img src="./photos/modern_building.jpg" alt="Современное здание" style="width: 100%; height: 200px; object-fit: cover;">
+                        </div>
+                        <div class="project__info">
+                            <h3 class="project__title">«Строительство 12-ти этажных жилых домов в АДЦ г. Туркестан. Участок №8» Дом 17, расположенного по адресу: Туркестанская область, г. Туркестан. Участок №8» Дом 17</h3>
+                            <p class="project__meta">2020-2022</p>
                         </div>
                     </div>
-                    
-                    <div class="contact-item">
-                        <i class="fas fa-building"></i>
-                        <div>
-                            <p><strong>Фактический адрес:</strong></p>
-                            <p>Алматинская область, Илийский район, Энергетический с.о., поселок Покровка, улица Степная 8</p>
+                    <div class="project__card fade-in" data-category="engineering">
+                        <div class="project__image">
+                            <img src="./photos/pipe_installation_1.jpg" alt="Монтаж трубопроводов" style="width: 100%; height: 200px; object-fit: cover;">
+                        </div>
+                        <div class="project__info">
+                            <h3 class="project__title">Капитальный ремонт магистрального трубопровода теплоснабжения</h3>
+                            <p class="project__meta">г. Кызылорда, 2017-2018</p>
                         </div>
                     </div>
-                    
-                    <div class="social-links">
-                        <a href="https://wa.me/77076601087" class="social-btn whatsapp">
-                            <i class="fab fa-whatsapp"></i>
-                            WhatsApp
-                        </a>
-                        <a href="https://t.me/luxconstructionkz" class="social-btn telegram">
-                            <i class="fab fa-telegram"></i>
-                            Telegram
-                        </a>
+                    <div class="project__card fade-in" data-category="engineering">
+                        <div class="project__image">
+                            <img src="./photos/electrical_work.jpg" alt="Электромонтажные работы" style="width: 100%; height: 200px; object-fit: cover;">
+                        </div>
+                        <div class="project__info">
+                            <h3 class="project__title">Капитальный ремонт сетей электроснабжения и наружного электроосвещения</h3>
+                            <p class="project__meta">г. Курчум, 2011-2012</p>
+                        </div>
+                    </div>
+                    <div class="project__card fade-in" data-category="engineering">
+                        <div class="project__image">
+                            <img src="./photos/water_pipe_work.jpg" alt="Водопроводные работы" style="width: 100%; height: 200px; object-fit: cover;">
+                        </div>
+                        <div class="project__info">
+                            <h3 class="project__title">Капитальный ремонт внутренних систем водопровода, отопления и канализации</h3>
+                            <p class="project__meta">с. Мырзакент, 2014-2016</p>
+                        </div>
+                    </div>
+                    <div class="project__card fade-in" data-category="engineering">
+                        <div class="project__image">
+                            <img src="./photos/gas_pipe_work.jpg" alt="Газопроводные работы" style="width: 100%; height: 200px; object-fit: cover;">
+                        </div>
+                        <div class="project__info">
+                            <h3 class="project__title">Капитальный ремонт сетей газоснабжения</h3>
+                            <p class="project__meta">Различные объекты, 2012-2015</p>
+                        </div>
                     </div>
                 </div>
             </div>
-            
-            <div class="why-choose-us">
-                <h3>Почему выбирают нас?</h3>
-                <div class="reasons-grid">
-                    <div class="reason">
-                        <i class="fas fa-calendar-alt"></i>
-                        <p>15 лет успешной работы</p>
+        </section>
+
+        <!-- Equipment Section -->
+        <section id="equipment">
+            <div class="container">
+                <div class="section__header">
+                    <h2 class="section__title">Наша техника</h2>
+                </div>
+                <div class="equipment__grid">
+                    <div class="equipment__card fade-in">
+                        <div class="equipment__image">
+                            <img src="./generated_photos/autograder_xcmg_gr215.jpg" alt="Автогрейдер XCMG GR215" style="width: 100%; height: 150px; object-fit: cover; border-radius: 4px;">
+                        </div>
+                        <h3 class="equipment__name">Автогрейдер</h3>
+                        <p class="equipment__details">«XCMG» модель GR215 2013 г.в.</p>
+                        <p class="equipment__quantity">В наличий: 1 ед.</p>
                     </div>
-                    <div class="reason">
-                        <i class="fas fa-users"></i>
-                        <p>Команда из 120 специалистов</p>
+                    <div class="equipment__card fade-in">
+                        <div class="equipment__image">
+                            <img src="./generated_photos/double_drum_roller_xcmg_yzc10.jpg" alt="Двухбарабанный вибро каток XCMG YZC10" style="width: 100%; height: 150px; object-fit: cover; border-radius: 4px;">
+                        </div>
+                        <h3 class="equipment__name">Двухбарабанный вибро каток</h3>
+                        <p class="equipment__details">«XCMG» модель YZC10 2013 г.в.</p>
+                        <p class="equipment__quantity">В наличий: 1 ед.</p>
                     </div>
-                    <div class="reason">
-                        <i class="fas fa-truck"></i>
-                        <p>Собственный парк техники</p>
+                    <div class="equipment__card fade-in">
+                        <div class="equipment__image">
+                            <img src="./generated_photos/single_drum_roller_xcmg_xs162j.jpg" alt="Однобарабанный вибрационный каток XCMG XS162J" style="width: 100%; height: 150px; object-fit: cover; border-radius: 4px;">
+                        </div>
+                        <h3 class="equipment__name">Однобарабанный вибрационный каток</h3>
+                        <p class="equipment__details">«XCMG» модель XS162J 2013 г.в.</p>
+                        <p class="equipment__quantity">В наличий: 2 ед.</p>
                     </div>
-                    <div class="reason">
-                        <i class="fas fa-certificate"></i>
-                        <p>Уникальные лицензии</p>
+                    <div class="equipment__card fade-in">
+                        <div class="equipment__image">
+                            <img src="./generated_photos/bulldozer_shehwa_ty165_2.jpg" alt="Бульдозер SHEHWA TY165-2" style="width: 100%; height: 150px; object-fit: cover; border-radius: 4px;">
+                        </div>
+                        <h3 class="equipment__name">Бульдозер</h3>
+                        <p class="equipment__details">«SHEHWA» модель TY165-2 2013 г.в.</p>
+                        <p class="equipment__quantity">В наличий: 2 ед.</p>
+                    </div>
+                    <div class="equipment__card fade-in">
+                        <div class="equipment__image">
+                            <img src="./generated_photos/wheel_loader_xcmg_lw500fl.jpg" alt="Фронтальный погрузчик XCMG LW 500FL" style="width: 100%; height: 150px; object-fit: cover; border-radius: 4px;">
+                        </div>
+                        <h3 class="equipment__name">Фронтальный погрузчик</h3>
+                        <p class="equipment__details">«XCMG» мод. LW 500FL 2013 г.в.</p>
+                        <p class="equipment__quantity">В наличий: 2 ед.</p>
+                    </div>
+                    <div class="equipment__card fade-in">
+                        <div class="equipment__image">
+                            <img src="./generated_photos/excavator_hitachi_zaxis_280.jpg" alt="Экскаватор HITACHI ZAXIS 280" style="width: 100%; height: 150px; object-fit: cover; border-radius: 4px;">
+                        </div>
+                        <h3 class="equipment__name">Экскаватор</h3>
+                        <p class="equipment__details">«HITACHI» модель ZAXIS 280 2013 г.в.</p>
+                        <p class="equipment__quantity">В наличий: 1 ед.</p>
+                    </div>
+                    <div class="equipment__card fade-in">
+                        <div class="equipment__image">
+                            <img src="./generated_photos/dump_truck_howo_25t.jpg" alt="Самосвал HOWO 25тн" style="width: 100%; height: 150px; object-fit: cover; border-radius: 4px;">
+                        </div>
+                        <h3 class="equipment__name">Самосвал</h3>
+                        <p class="equipment__details">фирмы «HOWO» 25 тн 2013 г.в.</p>
+                        <p class="equipment__quantity">В наличий: 5 ед.</p>
+                    </div>
+                    <div class="equipment__card fade-in">
+                        <div class="equipment__image">
+                            <img src="./generated_photos/tractor_howo.jpg" alt="Тягач HOWO" style="width: 100%; height: 150px; object-fit: cover; border-radius: 4px;">
+                        </div>
+                        <h3 class="equipment__name">Тягач</h3>
+                        <p class="equipment__details">фирмы «HOWO» 2013 г.в.</p>
+                        <p class="equipment__quantity">В наличий: 1 ед.</p>
+                    </div>
+                    <div class="equipment__card fade-in">
+                        <div class="equipment__image">
+                            <img src="./generated_photos/crane_kamaz_25t.jpg" alt="Автокран 25тн на базе Камаз" style="width: 100%; height: 150px; object-fit: cover; border-radius: 4px;">
+                        </div>
+                        <h3 class="equipment__name">Автокран 25тн.</h3>
+                        <p class="equipment__details">на базе «Камаз» г.п. 25 тн. 2010 г.в.</p>
+                        <p class="equipment__quantity">В наличий: 3 ед.</p>
+                    </div>
+                    <div class="equipment__card fade-in">
+                        <div class="equipment__image">
+                            <img src="./generated_photos/lowboy_trailer_sutong.jpg" alt="Трал Sutong" style="width: 100%; height: 150px; object-fit: cover; border-radius: 4px;">
+                        </div>
+                        <h3 class="equipment__name">Трал</h3>
+                        <p class="equipment__details">фирмы «Sutong» 2013 г.в.</p>
+                        <p class="equipment__quantity">В наличий: 1 ед.</p>
+                    </div>
+                    <div class="equipment__card fade-in">
+                        <div class="equipment__image">
+                            <img src="./generated_photos/mitsubishi_pajero_sport.jpg" alt="Автомобиль Mitsubishi Pajero Sport" style="width: 100%; height: 150px; object-fit: cover; border-radius: 4px;">
+                        </div>
+                        <h3 class="equipment__name">Автомобиль</h3>
+                        <p class="equipment__details">фирмы «Mitsubishi» модель Pajero Sport 2013 г.в.</p>
+                        <p class="equipment__quantity">В наличий: 1 ед.</p>
+                    </div>
+                    <div class="equipment__card fade-in">
+                        <div class="equipment__image">
+                            <img src="./generated_photos/toyota_hilux.jpg" alt="Автомобиль Toyota Hilux" style="width: 100%; height: 150px; object-fit: cover; border-radius: 4px;">
+                        </div>
+                        <h3 class="equipment__name">Автомобиль</h3>
+                        <p class="equipment__details">фирмы «Toyota» модель Hilux 2008 г.в.</p>
+                        <p class="equipment__quantity">В наличий: 2 ед.</p>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
+
+        <!-- Licenses Section -->
+        <section id="licenses">
+            <div class="container">
+                <div class="section__header">
+                    <h2 class="section__title">Лицензии и сертификаты</h2>
+                </div>
+                <div class="licenses__grid">
+                    <div class="license__card fade-in" onclick="openLightbox('license1')">
+                        <div class="license__image">
+                            <span class="icon">📄</span>
+                        </div>
+                        <h3>Государственная лицензия</h3>
+                        <p>Строительно-монтажные работы</p>
+                    </div>
+                    <div class="license__card fade-in" onclick="openLightbox('license2')">
+                        <div class="license__image">
+                            <span class="icon">📋</span>
+                        </div>
+                        <h3>Приложение к лицензии</h3>
+                        <p>Перечень разрешенных работ</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact">
+            <div class="container">
+                <div class="section__header">
+                    <h2 class="section__title">Контакты</h2>
+                </div>
+                <div class="contact__content">
+                    <div class="contact__info">
+                        <h3>Свяжитесь с нами</h3>
+                        <div class="contact__item">
+                            <span class="icon icon--large">📍</span>
+                            <div>
+                                <span class="contact__label">Адрес:</span>
+                                <p>Алматинская область Илийский район<br>
+                                Энергетический с.о. поселок Покровка улица<br>
+                                Степная 8</p>
+                            </div>
+                        </div>
+                        <div class="contact__item">
+                            <span class="icon icon--large">📱</span>
+                            <div>
+                                <span class="contact__label">Телефон:</span>
+                                <p>+7 (707) 660-10-87</p>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="contact__form">
+                        <h3>Оставьте заявку</h3>
+                        <form id="contactForm" onsubmit="handleSubmit(event)">
+                            <div class="form__group">
+                                <label for="name" class="form__label">Ваше имя <span class="text-red">*</span></label>
+                                <input type="text" id="name" class="form__input" required minlength="2">
+                                <span class="form__error"></span>
+                            </div>
+                            <div class="form__group">
+                                <label for="phone" class="form__label">Телефон <span class="text-red">*</span></label>
+                                <input type="tel" id="phone" class="form__input" required pattern="[+]7[0-9]{10}" placeholder="+7XXXXXXXXXX">
+                                <span class="form__error"></span>
+                            </div>
+                            <div class="form__group">
+                                <label for="email" class="form__label">E-mail <span class="text-red">*</span></label>
+                                <input type="email" id="email" class="form__input" required>
+                                <span class="form__error"></span>
+                            </div>
+                            <div class="form__group">
+                                <label for="message" class="form__label">Сообщение <span class="text-red">*</span></label>
+                                <textarea id="message" class="form__textarea" required minlength="10"></textarea>
+                                <span class="form__error"></span>
+                            </div>
+                            <button type="submit" class="form__submit">Отправить заявку</button>
+                            <div class="form__success" id="formSuccess">
+                                ✅ Спасибо за вашу заявку! Мы свяжемся с вами в ближайшее время.
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div id="map" class="map">
+                    <div class="map__loading">Загрузка карты...</div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Social Widgets -->
+    <div class="social-widgets">
+        <a href="https://wa.me/77076601087" target="_blank" class="widget whatsapp-widget" title="Написать в WhatsApp">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.893 3.488"/>
+            </svg>
+        </a>
+        <a href="https://t.me/luxconstructionkz" target="_blank" class="widget telegram-widget" title="Написать в Telegram">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+            </svg>
+        </a>
+    </div>
 
     <!-- Footer -->
-    <footer class="footer">
+    <footer>
         <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h3>LUX Construction</h3>
-                    <p>Единственная в регионе строительная компания с лицензией на атомную энергию</p>
-                </div>
-                <div class="footer-section">
-                    <h4>Услуги</h4>
-                    <ul>
-                        <li>Инженерные сети</li>
-                        <li>Дорожное строительство</li>
-                        <li>Специальные работы</li>
-                        <li>Высокотехнологичные услуги</li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4>Компания</h4>
-                    <ul>
-                        <li>О нас</li>
-                        <li>Проекты</li>
-                        <li>Лицензии</li>
-                        <li>Контакты</li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4>Контакты</h4>
-                    <p>+7 707 660 10 87</p>
-                </div>
+            <div class="footer__content">
+                <a href="#" class="footer__logo">
+                    <div class="logo__icon">
+                        <span class="logo__bar logo__bar--1"></span>
+                        <span class="logo__bar logo__bar--2"></span>
+                        <span class="logo__bar logo__bar--3"></span>
+                        <span class="logo__bar logo__bar--4"></span>
+                        <span class="logo__bar logo__bar--5"></span>
+                    </div>
+                    Lux Construction
+                </a>
+                <ul class="footer__nav">
+                    <li><a href="#about" class="footer__link">О компании</a></li>
+                    <li><a href="#services" class="footer__link">Услуги</a></li>
+                    <li><a href="#projects" class="footer__link">Проекты</a></li>
+                    <li><a href="#equipment" class="footer__link">Техника</a></li>
+                    <li><a href="#licenses" class="footer__link">Лицензии</a></li>
+                    <li><a href="#contact" class="footer__link">Контакты</a></li>
+                </ul>
             </div>
-            <div class="footer-bottom">
-                <p>&copy; 2025 ТОО "LUX Construction". Все права защищены.</p>
+            <div class="footer__copy">
+                © 2025 ТОО "Lux Construction". Все права защищены.
             </div>
         </div>
     </footer>
 
-    <!-- Floating Widgets -->
-    <div class="floating-widgets">
-        <a href="https://wa.me/77076601087" target="_blank" class="floating-btn whatsapp-btn" title="WhatsApp">
-            <i class="fab fa-whatsapp"></i>
-            <span>WhatsApp</span>
-        </a>
-        <a href="https://t.me/luxconstructionkz" target="_blank" class="floating-btn telegram-btn" title="Telegram">
-            <i class="fab fa-telegram"></i>
-            <span>Telegram</span>
-        </a>
-    </div>
-
-    <!-- Consultation Modal -->
-    <div id="consultationModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeConsultationModal()">&times;</span>
-            <h3>Получить бесплатную консультацию</h3>
-            <form id="consultationForm" class="consultation-form">
-                <input type="text" name="name" placeholder="Ваше имя" required>
-                <input type="tel" name="phone" placeholder="Телефон" required>
-                <input type="email" name="email" placeholder="Email">
-                <textarea name="message" placeholder="Описание проекта" rows="4"></textarea>
-                <button type="submit">Отправить заявку</button>
-            </form>
+    <!-- Lightbox -->
+    <div class="lightbox" id="lightbox" onclick="closeLightbox()">
+        <span class="lightbox__close" onclick="closeLightbox()">&times;</span>
+        <div class="lightbox__content">
+            <div class="lightbox__loading">Загрузка...</div>
         </div>
     </div>
 
-    <!-- Success Modal -->
-    <div id="successModal" class="modal">
-        <div class="modal-content success-modal-aqyl">
-            <div class="success-content">
-                <div class="success-icon-party">
-                    🎉
-                </div>
-                <h2 class="success-title">Спасибо!</h2>
-                <p class="success-message">Ваша заявка успешно отправлена!</p>
-                <p class="success-submessage">Мы свяжемся с вами в ближайшее время.</p>
-                <div class="success-note">
-                    ⚡ Обычно мы отвечаем в течение 10 минут
-                </div>
-                <button onclick="closeSuccessModal()" class="success-btn">Закрыть</button>
-            </div>
-        </div>
-    </div>
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-    <script src="script.js"></script>
+    <script>
+        // 1. Toggle мобильного меню
+        const burger = document.getElementById('navBurger');
+        const menu = document.getElementById('navMenu');
+        
+        if (burger && menu) {
+            burger.addEventListener('click', () => {
+                burger.classList.toggle('active');
+                menu.classList.toggle('active');
+            });
+
+            // Закрытие меню при клике на ссылку
+            menu.querySelectorAll('.nav__link').forEach(link => {
+                link.addEventListener('click', () => {
+                    burger.classList.remove('active');
+                    menu.classList.remove('active');
+                });
+            });
+        }
+
+        // 2. Фильтрация проектов
+        document.querySelectorAll('.filter__btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Убираем активный класс у всех кнопок
+                document.querySelector('.filter__btn.active')?.classList.remove('active');
+                // Добавляем активный класс к нажатой кнопке
+                btn.classList.add('active');
+                
+                const filter = btn.dataset.filter;
+                
+                // Фильтрация строк таблицы
+                document.querySelectorAll('tbody tr[data-category]').forEach(row => {
+                    row.style.display = (filter === 'all' || row.dataset.category === filter) ? '' : 'none';
+                });
+                
+                // Фильтрация карточек проектов
+                document.querySelectorAll('.project__card[data-category]').forEach(card => {
+                    card.style.display = (filter === 'all' || card.dataset.category === filter) ? '' : 'none';
+                });
+            });
+        });
+
+        // 3. Валидация и отправка формы
+        async function handleSubmit(e) {
+            e.preventDefault();
+            const form = e.target;
+            let valid = true;
+            
+            // Проверяем каждое поле
+            form.querySelectorAll('.form__group').forEach(group => {
+                const input = group.querySelector('input, textarea');
+                const errSpan = group.querySelector('.form__error');
+                
+                if (!input.checkValidity()) {
+                    valid = false;
+                    input.classList.add('error');
+                    errSpan.textContent = input.validationMessage;
+                } else {
+                    input.classList.remove('error');
+                    errSpan.textContent = '';
+                }
+            });
+            
+            if (!valid) return;
+            
+            // Получаем данные формы
+            const name = document.getElementById('name').value;
+            const phone = document.getElementById('phone').value;
+            const email = document.getElementById('email').value;
+            const message = document.getElementById('message').value;
+            
+            // Отправка формы
+            const btn = form.querySelector('.form__submit');
+            const originalText = btn.textContent;
+            btn.disabled = true;
+            btn.textContent = 'Отправка...';
+            
+            try {
+                // Создаем контроллер для таймаута
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 10000);
+                
+                // Основной endpoint
+                let response;
+                let lastError;
+                
+                try {
+                    // Отправляем данные на рабочий Flask endpoint
+                    response = await fetch('https://vgh0i1cje80e.manus.space/api/submit-form', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            name: name,
+                            phone: phone,
+                            email: email || '',
+                            message: message || ''
+                        }),
+                        signal: controller.signal
+                    });
+                } catch (primaryError) {
+                    console.warn('Primary endpoint failed, trying backup...', primaryError);
+                    lastError = primaryError;
+                    
+                    // Резервный endpoint (локальный)
+                    try {
+                        response = await fetch('http://localhost:5000/api/submit-form', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                name: name,
+                                phone: phone,
+                                email: email || '',
+                                message: message || ''
+                            }),
+                            signal: controller.signal
+                        });
+                    } catch (backupError) {
+                        console.error('Both endpoints failed');
+                        throw lastError; // Бросаем первоначальную ошибку
+                    }
+                }
+                
+                clearTimeout(timeoutId);
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(`HTTP error! status: ${response.status}, message: ${errorData.error || 'Unknown error'}`);
+                }
+                
+                const result = await response.json();
+                console.log('Form submitted successfully:', result);
+                
+                // Показываем сообщение об успехе
+                form.style.display = 'none';
+                document.getElementById('formSuccess').style.display = 'block';
+                
+            } catch (error) {
+                console.error('Error submitting form:', error);
+                
+                // Показываем ошибку пользователю
+                btn.disabled = false;
+                btn.textContent = originalText;
+                
+                // Можно добавить показ ошибки в UI
+                alert('Произошла ошибка при отправке формы. Пожалуйста, попробуйте еще раз или свяжитесь с нами по телефону.');
+            }
+        }
+
+        // 4. Инициализация карты Leaflet
+        document.addEventListener('DOMContentLoaded', function() {
+            try {
+                // Координаты Алматы
+                const map = L.map('map').setView([43.3143, 77.1424], 12);
+                
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                }).addTo(map);
+                
+                // Добавляем маркер офиса
+                L.marker([43.3143, 77.1424]).addTo(map)
+                    .bindPopup('<b>ТОО "Lux Construction"</b><br>Алматинская область, Илийский район<br>Энергетический с.о. поселок Покровка<br>улица Степная 8')
+                    .openPopup();
+                
+                map.whenReady(() => {
+                    const loadingEl = document.querySelector('.map__loading');
+                    if (loadingEl) {
+                        loadingEl.style.display = 'none';
+                    }
+                });
+            } catch (error) {
+                console.error('Ошибка инициализации карты:', error);
+                const loadingEl = document.querySelector('.map__loading');
+                if (loadingEl) {
+                    loadingEl.textContent = 'Ошибка загрузки карты';
+                }
+            }
+        });
+
+        // 5. Простая анимация "count up"
+        function animateCount(id, target) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            
+            const targetNum = parseInt(target.replace('+', ''), 10);
+            const hasPlus = target.includes('+');
+            let current = 0;
+            const increment = Math.ceil(targetNum / 60);
+            
+            const timer = setInterval(() => {
+                current = Math.min(current + increment, targetNum);
+                el.textContent = current + (hasPlus ? '+' : '');
+                
+                if (current >= targetNum) {
+                    clearInterval(timer);
+                }
+            }, 30);
+        }
+
+        // Запускаем анимацию счетчиков при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            // Небольшая задержка для эффекта
+            setTimeout(() => {
+                animateCount('yearsCount', '15');
+                animateCount('staffCount', '100+');
+            }, 500);
+        });
+
+        // 6. Функции для лайтбокса (если нужны)
+        function openLightbox(imageId) {
+            const lightbox = document.getElementById('lightbox');
+            if (lightbox) {
+                lightbox.style.display = 'block';
+                // Здесь можно добавить логику загрузки конкретного изображения
+            }
+        }
+
+        function closeLightbox() {
+            const lightbox = document.getElementById('lightbox');
+            if (lightbox) {
+                lightbox.style.display = 'none';
+            }
+        }
+
+        // 7. Плавная прокрутка к якорям
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // 8. Анимация появления элементов при скролле
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('fade-in');
+                }
+            });
+        }, observerOptions);
+
+        // Наблюдаем за элементами с классом fade-in
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.fade-in').forEach(el => {
+                observer.observe(el);
+            });
+        });
+    </script>
 </body>
 </html>
 
